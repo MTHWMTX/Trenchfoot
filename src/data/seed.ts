@@ -1,5 +1,13 @@
 import { db } from './db';
 import type { Ruleset, Rule, Keyword } from '../types';
+import { factions, warbandVariants } from '../features/warband/data/factions';
+import { antiochModels } from '../features/warband/data/models-antioch';
+import { pilgrimModels } from '../features/warband/data/models-pilgrims';
+import { sultanateModels } from '../features/warband/data/models-sultanate';
+import { hereticModels } from '../features/warband/data/models-heretic';
+import { grailModels } from '../features/warband/data/models-grail';
+import { serpentModels } from '../features/warband/data/models-serpent';
+import { equipmentTemplates } from '../features/warband/data/equipment';
 
 const OFFICIAL_RULESET_ID = 'official-1.0';
 
@@ -360,13 +368,40 @@ const keywords: Keyword[] = [
   },
 ];
 
+const allModelTemplates = [
+  ...antiochModels,
+  ...pilgrimModels,
+  ...sultanateModels,
+  ...hereticModels,
+  ...grailModels,
+  ...serpentModels,
+];
+
 export async function seedDatabase() {
   const existingRulesets = await db.rulesets.count();
-  if (existingRulesets > 0) return;
+  if (existingRulesets > 0) {
+    // Seed warband data if missing (DB upgraded from v1 to v2)
+    const existingFactions = await db.factions.count();
+    if (existingFactions === 0) {
+      await seedWarbandData();
+    }
+    return;
+  }
 
   await db.transaction('rw', db.rulesets, db.rules, db.keywords, async () => {
     await db.rulesets.add(ruleset);
     await db.rules.bulkAdd(rules);
     await db.keywords.bulkAdd(keywords);
+  });
+
+  await seedWarbandData();
+}
+
+async function seedWarbandData() {
+  await db.transaction('rw', db.factions, db.warbandVariants, db.modelTemplates, db.equipmentTemplates, async () => {
+    await db.factions.bulkPut(factions);
+    await db.warbandVariants.bulkPut(warbandVariants);
+    await db.modelTemplates.bulkPut(allModelTemplates);
+    await db.equipmentTemplates.bulkPut(equipmentTemplates);
   });
 }

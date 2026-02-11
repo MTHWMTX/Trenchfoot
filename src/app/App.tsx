@@ -5,6 +5,9 @@ import { RulesHome } from '../features/rules/components/RulesHome';
 import { RuleCategory } from '../features/rules/components/RuleCategory';
 import { RuleDetail } from '../features/rules/components/RuleDetail';
 import { RuleSearch } from '../features/rules/components/RuleSearch';
+import { WarbandList } from '../features/warband/components/WarbandList';
+import { WarbandCreate } from '../features/warband/components/WarbandCreate';
+import { WarbandRoster } from '../features/warband/components/WarbandRoster';
 import { seedDatabase } from '../data/seed';
 
 function Placeholder({ title, icon }: { title: string; icon: string }) {
@@ -49,7 +52,9 @@ export function App() {
           <Route path="/rules/:category" element={<RuleCategory />} />
           <Route path="/rules/:category/:slug" element={<RuleDetail />} />
           <Route path="/search" element={<RuleSearch />} />
-          <Route path="/warband" element={<Placeholder title="Warband Builder" icon="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />} />
+          <Route path="/warband" element={<WarbandList />} />
+          <Route path="/warband/new" element={<WarbandCreate />} />
+          <Route path="/warband/:id" element={<WarbandRoster />} />
           <Route path="/campaign" element={<Placeholder title="Campaign" icon="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" />} />
         </Route>
       </Routes>
