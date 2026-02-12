@@ -14,17 +14,12 @@ export interface Keyword {
   rulesetId: string;
   term: string;
   aliases: string[];
+  category: string;
   definition: string;
-  ruleId: string;
 }
 
 export type RuleCategory =
   | 'core'
-  | 'combat'
-  | 'movement'
-  | 'morale'
-  | 'campaign'
-  | 'equipment'
   | 'faction'
   | 'scenario';
 
@@ -40,71 +35,99 @@ export interface Rule {
   keywordIds: string[];
 }
 
+// --- Faction Equipment/Model Pricing ---
+
+export interface FactionEquipEntry {
+  equipId: string;
+  cost: number;
+  costType: 'ducats' | 'glory';
+  limit: number;
+  restrictions: { type: string; val: string }[];
+  features?: string[];
+}
+
+export interface FactionModelEntry {
+  modelId: string;
+  cost: number;
+  costType: 'ducats' | 'glory';
+  limitMin: number;
+  limitMax: number;
+  defaultEquipment: string[];
+  upgrades: { id: string; cost: number; costType: string }[];
+}
+
+export interface FactionRule {
+  title: string;
+  description: string;
+}
+
 // --- Factions & Warband Building ---
 
-export type FactionSide = 'faithful' | 'heretic';
-export type ModelType = 'infantry' | 'elite' | 'hero' | 'monster';
-export type EquipmentType = 'ranged_weapon' | 'melee_weapon' | 'armour' | 'relic' | 'item';
 export type GameType = 'standard' | 'campaign';
+export type EquipmentCategory = 'ranged' | 'melee' | 'armour' | 'equipment';
 
 export interface Faction {
   id: string;
   rulesetId: string;
   name: string;
-  side: FactionSide;
-  description: string;
-  keywordIds: string[];
+  team: 'heaven' | 'hell';
+  flavour: string;
+  rules: FactionRule[];
+  equipmentList: FactionEquipEntry[];
+  modelList: FactionModelEntry[];
 }
 
 export interface WarbandVariant {
   id: string;
   factionId: string;
   name: string;
-  description: string;
-  specialRules: string[];
+  flavour: string;
+  rules: FactionRule[];
+  removedRules: string[];
+  removedEquipment: string[];
+  removedModels: string[];
+  addedEquipment: FactionEquipEntry[];
+  addedModels: FactionModelEntry[];
 }
 
 export interface ModelStats {
   movement: number;
-  ranged: number;
-  melee: number;
+  ranged: number | null;
+  melee: number | null;
   armour: number;
-  wounds: number;
-  base: string;
-}
-
-export interface EquipmentSlot {
-  type: EquipmentType;
-  required: boolean;
-  maxCount: number;
+  base: number[];
 }
 
 export interface ModelTemplate {
   id: string;
-  factionId: string;
-  variantIds: string[];
   name: string;
-  type: ModelType;
+  factionId: string;
+  variantId: string;
+  team: 'heaven' | 'hell';
+  tags: string[];
   stats: ModelStats;
-  baseCost: number;
-  gloryCost: number;
-  maxCount: number;
-  equipmentSlots: EquipmentSlot[];
-  defaultEquipmentIds: string[];
-  specialRules: string[];
-  keywords: string[];
+  addonIds: string[];
+  blurb: string;
 }
 
 export interface EquipmentTemplate {
   id: string;
-  factionId: string;
   name: string;
-  type: EquipmentType;
-  cost: number;
-  gloryCost: number;
-  stats: Record<string, number | string>;
-  specialRules: string[];
-  restrictions: string[];
+  category: EquipmentCategory;
+  equipType: string | null;
+  range: string | null;
+  tags: string[];
+  modifiers: string[];
+  description: string;
+  blurb: string;
+}
+
+export interface Addon {
+  id: string;
+  name: string;
+  factionId: string;
+  tags: string[];
+  description: string;
 }
 
 // --- User Warband Data ---

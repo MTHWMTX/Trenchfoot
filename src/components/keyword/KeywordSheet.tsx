@@ -1,20 +1,11 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useNavigate } from 'react-router-dom';
 import { useRulesStore } from '../../features/rules/store';
 import { useKeyword } from '../../features/rules/hooks';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../data/db';
 
 export function KeywordSheet() {
   const selectedKeywordId = useRulesStore((s) => s.selectedKeywordId);
   const setSelectedKeyword = useRulesStore((s) => s.setSelectedKeyword);
   const keyword = useKeyword(selectedKeywordId ?? '');
-  const navigate = useNavigate();
-
-  const linkedRule = useLiveQuery(
-    () => (keyword ? db.rules.get(keyword.ruleId) : undefined),
-    [keyword?.ruleId]
-  );
 
   return (
     <Dialog.Root
@@ -38,25 +29,9 @@ export function KeywordSheet() {
                 {keyword.term}
               </Dialog.Title>
 
-              <Dialog.Description className="text-text-secondary text-[13px] leading-relaxed mb-5">
+              <Dialog.Description className="text-text-secondary text-[13px] leading-relaxed whitespace-pre-line">
                 {keyword.definition}
               </Dialog.Description>
-
-              {linkedRule && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedKeyword(null);
-                    navigate(`/rules/${linkedRule.category}/${linkedRule.slug}`);
-                  }}
-                  className="group w-full py-3 px-4 bg-bg-tertiary border border-border-default rounded-xl text-text-primary text-[13px] font-medium hover:border-accent-gold/20 hover:bg-bg-elevated transition-all duration-200 cursor-pointer flex items-center justify-between"
-                >
-                  <span>View: {linkedRule.title}</span>
-                  <svg className="w-4 h-4 text-text-muted group-hover:text-accent-gold transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              )}
             </>
           )}
         </Dialog.Content>

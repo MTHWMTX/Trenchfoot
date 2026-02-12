@@ -3,21 +3,45 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { updateWarbandModel } from '../actions';
-import { useEquipmentTemplates } from '../hooks';
 import { KeywordText } from '../../../components/keyword/KeywordText';
-import type { WarbandModel } from '../../../types';
+import type { WarbandModel, Faction, EquipmentCategory } from '../../../types';
 
 interface ModelEditSheetProps {
   model: WarbandModel | null;
+  faction: Faction | undefined;
   onClose: () => void;
 }
 
-export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
+function formatDice(val: number | null): string {
+  if (val === null || val === undefined) return '\u2014';
+  if (val > 0) return `+${val}`;
+  return `${val}`;
+}
+
+const categoryLabels: Record<EquipmentCategory, string> = {
+  ranged: 'Ranged Weapons',
+  melee: 'Melee Weapons',
+  armour: 'Armour',
+  equipment: 'Equipment',
+};
+
+const categoryOrder: EquipmentCategory[] = ['ranged', 'melee', 'armour', 'equipment'];
+
+export function ModelEditSheet({ model, faction, onClose }: ModelEditSheetProps) {
   const template = useLiveQuery(
     () => (model ? db.modelTemplates.get(model.templateId) : undefined),
     [model?.templateId]
   );
-  const allEquipment = useEquipmentTemplates();
+
+  // Get all equipment templates that this faction can use
+  const factionEquipIds = (faction?.equipmentList ?? []).map(e => e.equipId);
+  const availableEquipment = useLiveQuery(
+    async () => factionEquipIds.length > 0
+      ? db.equipmentTemplates.where('id').anyOf(factionEquipIds).toArray()
+      : [],
+    [factionEquipIds.join(',')]
+  ) ?? [];
+
   const [customName, setCustomName] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
 
@@ -30,14 +54,16 @@ export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
 
   if (!model || !template) return null;
 
-  const availableEquipment = allEquipment.filter(
-    (eq) => !eq.factionId || eq.factionId === template.factionId
-  );
+  const equipEntryMap = new Map((faction?.equipmentList ?? []).map(e => [e.equipId, e]));
 
-  const groupedEquipment = template.equipmentSlots.map((slot) => ({
-    slot,
-    items: availableEquipment.filter((eq) => eq.type === slot.type),
-  }));
+  // Group available equipment by category
+  const groupedEquipment = categoryOrder
+    .map(cat => ({
+      category: cat,
+      label: categoryLabels[cat],
+      items: availableEquipment.filter(eq => eq.category === cat),
+    }))
+    .filter(group => group.items.length > 0);
 
   const toggleEquipment = (eqId: string) => {
     setSelectedEquipment((prev) =>
@@ -78,11 +104,11 @@ export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
           {/* Stats */}
           <div className="flex gap-3 mb-4 p-3 bg-bg-tertiary rounded-lg">
             {[
-              { label: 'MV', value: template.stats.movement },
-              { label: 'RNG', value: template.stats.ranged || '-' },
-              { label: 'MEL', value: template.stats.melee },
-              { label: 'ARM', value: template.stats.armour },
-              { label: 'WND', value: template.stats.wounds },
+              { label: 'MV', value: `${template.stats.movement}` },
+              { label: 'RNG', value: formatDice(template.stats.ranged) },
+              { label: 'MEL', value: formatDice(template.stats.melee) },
+              { label: 'ARM', value: `${template.stats.armour}` },
+              { label: 'BASE', value: template.stats.base.join('x') },
             ].map((s) => (
               <div key={s.label} className="flex flex-col items-center flex-1">
                 <span className="text-[9px] text-text-muted uppercase">{s.label}</span>
@@ -91,18 +117,25 @@ export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
             ))}
           </div>
 
-          {/* Equipment slots */}
-          {groupedEquipment.map(({ slot, items }, si) => (
-            <div key={si} className="mb-4">
+          {/* Blurb */}
+          {template.blurb && (
+            <div className="mb-4 p-3 bg-bg-tertiary rounded-lg">
+              <div className="text-[11px] text-text-secondary leading-relaxed whitespace-pre-line">
+                <KeywordText text={template.blurb} />
+              </div>
+            </div>
+          )}
+
+          {/* Equipment selection by category */}
+          {groupedEquipment.map(({ category, label, items }) => (
+            <div key={category} className="mb-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] text-text-muted uppercase tracking-wider">
-                  {slot.type.replace('_', ' ')}
-                </span>
-                {slot.required && <span className="text-[9px] text-accent-red-bright">Required</span>}
+                <span className="text-[11px] text-text-muted uppercase tracking-wider">{label}</span>
               </div>
               <div className="flex flex-col gap-1">
                 {items.map((eq) => {
                   const selected = selectedEquipment.includes(eq.id);
+                  const entry = equipEntryMap.get(eq.id);
                   return (
                     <button
                       key={eq.id}
@@ -116,11 +149,13 @@ export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[12px] font-medium text-text-primary">{eq.name}</span>
-                        <span className="text-[11px] text-accent-gold">{eq.cost > 0 ? `${eq.cost}d` : 'Free'}</span>
+                        <span className={`text-[11px] ${entry?.costType === 'glory' ? 'text-purple-300' : 'text-accent-gold'}`}>
+                          {entry ? (entry.cost > 0 ? `${entry.cost}${entry.costType === 'ducats' ? 'd' : 'g'}` : 'Free') : ''}
+                        </span>
                       </div>
-                      {eq.specialRules.length > 0 && (
-                        <div className="text-[10px] text-text-muted mt-0.5 leading-relaxed">
-                          <KeywordText text={eq.specialRules[0]} />
+                      {eq.description && (
+                        <div className="text-[10px] text-text-muted mt-0.5 leading-relaxed line-clamp-2">
+                          <KeywordText text={eq.description} />
                         </div>
                       )}
                     </button>
@@ -130,15 +165,13 @@ export function ModelEditSheet({ model, onClose }: ModelEditSheetProps) {
             </div>
           ))}
 
-          {/* Special Rules */}
-          {template.specialRules.length > 0 && (
+          {/* Tags */}
+          {template.tags.length > 0 && (
             <div className="mb-4">
-              <span className="text-[11px] text-text-muted uppercase tracking-wider block mb-2">Special Rules</span>
-              <div className="space-y-1.5">
-                {template.specialRules.map((rule, i) => (
-                  <div key={i} className="text-[12px] text-text-secondary leading-relaxed p-2 bg-bg-tertiary rounded-lg">
-                    <KeywordText text={rule} />
-                  </div>
+              <span className="text-[11px] text-text-muted uppercase tracking-wider block mb-2">Tags</span>
+              <div className="flex flex-wrap gap-1">
+                {template.tags.map((tag) => (
+                  <span key={tag} className="text-[10px] text-accent-gold/70 bg-accent-gold/8 px-2 py-1 rounded">{tag}</span>
                 ))}
               </div>
             </div>

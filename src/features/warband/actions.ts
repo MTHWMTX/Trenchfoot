@@ -64,15 +64,23 @@ export async function updateWarband(id: string, changes: Partial<Warband>) {
 
 export async function addModelToWarband(warbandId: string, templateId: string): Promise<string> {
   const id = crypto.randomUUID();
-  const template = await db.modelTemplates.get(templateId);
+  const warband = await db.warbands.get(warbandId);
   const count = await db.warbandModels.where('warbandId').equals(warbandId).count();
+
+  // Look up default equipment from faction's model list
+  let defaultEquipment: string[] = [];
+  if (warband) {
+    const faction = await db.factions.get(warband.factionId);
+    const modelEntry = faction?.modelList.find(m => m.modelId === templateId);
+    defaultEquipment = modelEntry?.defaultEquipment ?? [];
+  }
 
   const model: WarbandModel = {
     id,
     warbandId,
     templateId,
     customName: '',
-    equipmentIds: template?.defaultEquipmentIds ?? [],
+    equipmentIds: defaultEquipment,
     notes: '',
     order: count,
   };

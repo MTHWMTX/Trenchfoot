@@ -1,14 +1,21 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
-import type { WarbandModel } from '../../../types';
+import type { WarbandModel, Faction } from '../../../types';
 
 interface ModelCardProps {
   model: WarbandModel;
+  faction: Faction | undefined;
   onTap: () => void;
   onDelete: () => void;
 }
 
-export function ModelCard({ model, onTap, onDelete }: ModelCardProps) {
+function formatDice(val: number | null): string {
+  if (val === null || val === undefined) return '\u2014';
+  if (val > 0) return `+${val}`;
+  return `${val}`;
+}
+
+export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
   const template = useLiveQuery(() => db.modelTemplates.get(model.templateId), [model.templateId]);
   const equipment = useLiveQuery(
     () => Promise.all(model.equipmentIds.map((id) => db.equipmentTemplates.get(id))),
@@ -17,14 +24,30 @@ export function ModelCard({ model, onTap, onDelete }: ModelCardProps) {
 
   if (!template) return null;
 
-  const eqCost = (equipment ?? []).reduce((sum, eq) => sum + (eq?.cost ?? 0), 0);
-  const totalCost = template.baseCost + eqCost;
+  // Look up cost from faction
+  const modelEntry = faction?.modelList.find(m => m.modelId === model.templateId);
+  const modelCost = modelEntry?.cost ?? 0;
+  const modelCostType = modelEntry?.costType ?? 'ducats';
 
-  const typeColors = {
-    infantry: 'bg-accent-blue/20 text-blue-300',
+  // Equipment costs from faction
+  const eqCost = (model.equipmentIds ?? []).reduce((sum, eqId) => {
+    const entry = faction?.equipmentList.find(e => e.equipId === eqId);
+    return sum + (entry && entry.costType === 'ducats' ? entry.cost : 0);
+  }, 0);
+  const eqGlory = (model.equipmentIds ?? []).reduce((sum, eqId) => {
+    const entry = faction?.equipmentList.find(e => e.equipId === eqId);
+    return sum + (entry && entry.costType === 'glory' ? entry.cost : 0);
+  }, 0);
+
+  const totalDucats = (modelCostType === 'ducats' ? modelCost : 0) + eqCost;
+  const totalGlory = (modelCostType === 'glory' ? modelCost : 0) + eqGlory;
+
+  const primaryTag = template.tags.find(t => ['elite', 'hero', 'tough', 'fear'].includes(t));
+  const tagColors: Record<string, string> = {
     elite: 'bg-accent-gold/15 text-accent-gold',
     hero: 'bg-purple-900/30 text-purple-300',
-    monster: 'bg-accent-red/20 text-accent-red-bright',
+    tough: 'bg-green-900/30 text-green-300',
+    fear: 'bg-accent-red/20 text-accent-red-bright',
   };
 
   return (
@@ -51,19 +74,20 @@ export function ModelCard({ model, onTap, onDelete }: ModelCardProps) {
             <div className="text-[11px] text-text-muted truncate">{template.name}</div>
           )}
         </div>
-        <span className={`text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${typeColors[template.type]}`}>
-          {template.type}
-        </span>
+        {primaryTag && (
+          <span className={`text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${tagColors[primaryTag] ?? 'bg-bg-tertiary text-text-muted'}`}>
+            {primaryTag}
+          </span>
+        )}
       </div>
 
       {/* Stats row */}
       <div className="flex gap-2 mb-2">
         {[
-          { label: 'MV', value: template.stats.movement },
-          { label: 'RNG', value: template.stats.ranged || '-' },
-          { label: 'MEL', value: template.stats.melee },
-          { label: 'ARM', value: template.stats.armour },
-          { label: 'WND', value: template.stats.wounds },
+          { label: 'MV', value: `${template.stats.movement}` },
+          { label: 'RNG', value: formatDice(template.stats.ranged) },
+          { label: 'MEL', value: formatDice(template.stats.melee) },
+          { label: 'ARM', value: `${template.stats.armour}` },
         ].map((s) => (
           <div key={s.label} className="flex flex-col items-center">
             <span className="text-[8px] text-text-muted uppercase">{s.label}</span>
@@ -85,10 +109,8 @@ export function ModelCard({ model, onTap, onDelete }: ModelCardProps) {
 
       {/* Cost */}
       <div className="flex items-center justify-between">
-        <span className="text-[11px] text-accent-gold font-semibold">{totalCost} ducats</span>
-        {template.gloryCost > 0 && (
-          <span className="text-[11px] text-purple-300 font-semibold">{template.gloryCost} glory</span>
-        )}
+        {totalDucats > 0 && <span className="text-[11px] text-accent-gold font-semibold">{totalDucats} ducats</span>}
+        {totalGlory > 0 && <span className="text-[11px] text-purple-300 font-semibold">{totalGlory} glory</span>}
       </div>
     </div>
   );

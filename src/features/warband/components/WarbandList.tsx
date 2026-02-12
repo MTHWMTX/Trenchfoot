@@ -20,7 +20,7 @@ function WarbandCard({ warband }: { warband: { id: string; name: string; faction
         to={`/warband/${warband.id}`}
         className="block p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all duration-200 no-underline"
       >
-        {faction && <FactionBadge name={faction.name} side={faction.side} />}
+        {faction && <FactionBadge name={faction.name} team={faction.team} />}
         <div className="font-semibold text-text-primary text-[14px] mt-2">{warband.name}</div>
         <div className="flex items-center gap-3 mt-1.5 text-[11px] text-text-muted">
           <span>{modelCount} {modelCount === 1 ? 'model' : 'models'}</span>

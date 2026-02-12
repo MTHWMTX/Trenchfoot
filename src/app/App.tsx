@@ -4,7 +4,9 @@ import { Layout } from './Layout';
 import { RulesHome } from '../features/rules/components/RulesHome';
 import { RuleCategory } from '../features/rules/components/RuleCategory';
 import { RuleDetail } from '../features/rules/components/RuleDetail';
-import { RuleSearch } from '../features/rules/components/RuleSearch';
+import { FactionList } from '../features/rules/components/FactionList';
+import { FactionDetail } from '../features/rules/components/FactionDetail';
+import { EquipmentList } from '../features/rules/components/EquipmentList';
 import { WarbandList } from '../features/warband/components/WarbandList';
 import { WarbandCreate } from '../features/warband/components/WarbandCreate';
 import { WarbandRoster } from '../features/warband/components/WarbandRoster';
@@ -49,9 +51,11 @@ export function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/rules" replace />} />
           <Route path="/rules" element={<RulesHome />} />
+          <Route path="/rules/faction" element={<FactionList />} />
+          <Route path="/rules/faction/:factionId" element={<FactionDetail />} />
+          <Route path="/rules/equipment" element={<EquipmentList />} />
           <Route path="/rules/:category" element={<RuleCategory />} />
           <Route path="/rules/:category/:slug" element={<RuleDetail />} />
-          <Route path="/search" element={<RuleSearch />} />
           <Route path="/warband" element={<WarbandList />} />
           <Route path="/warband/new" element={<WarbandCreate />} />
           <Route path="/warband/:id" element={<WarbandRoster />} />

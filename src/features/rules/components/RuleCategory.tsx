@@ -4,11 +4,6 @@ import type { RuleCategory as RuleCategoryType } from '../../../types';
 
 const categoryLabels: Record<RuleCategoryType, string> = {
   core: 'Core Rules',
-  movement: 'Movement',
-  combat: 'Combat',
-  morale: 'Morale',
-  equipment: 'Equipment',
-  campaign: 'Campaign',
   faction: 'Factions',
   scenario: 'Scenarios',
 };

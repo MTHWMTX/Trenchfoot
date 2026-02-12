@@ -1,17 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
-import type { RuleCategory } from '../../../types';
 
-const categories: { id: RuleCategory; label: string; icon: string; description: string }[] = [
-  { id: 'core', label: 'Core Rules', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25', description: 'Fundamentals of gameplay' },
-  { id: 'movement', label: 'Movement', icon: 'M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15', description: 'Moving models on the battlefield' },
-  { id: 'combat', label: 'Combat', icon: 'M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z', description: 'Shooting and melee attacks' },
-  { id: 'morale', label: 'Morale', icon: 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z', description: 'Blood markers and rout checks' },
-  { id: 'equipment', label: 'Equipment', icon: 'M11.42 15.17l-5.658-3.163a2.25 2.25 0 01-1.012-1.883V6.073a2.25 2.25 0 011.012-1.883l5.658-3.163a2.25 2.25 0 012.16 0l5.658 3.163a2.25 2.25 0 011.012 1.883v4.051a2.25 2.25 0 01-1.012 1.883l-5.658 3.163a2.25 2.25 0 01-2.16 0z', description: 'Weapons, armour, and relics' },
-  { id: 'campaign', label: 'Campaign', icon: 'M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5', description: 'Post-game and campaign play' },
-  { id: 'faction', label: 'Factions', icon: 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z', description: 'Faction-specific rules' },
-  { id: 'scenario', label: 'Scenarios', icon: 'M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z', description: 'Missions and objectives' },
+const categories: { id: string; link: string; label: string; icon: string; description: string }[] = [
+  { id: 'core', link: '/rules/core', label: 'Core Rules', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25', description: 'Movement, combat, morale, and campaign' },
+  { id: 'faction', link: '/rules/faction', label: 'Factions', icon: 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z', description: 'Units and warband variants' },
+  { id: 'equipment', link: '/rules/equipment', label: 'Equipment', icon: 'M11.42 15.17l-5.658-3.163a2.25 2.25 0 01-1.012-1.883V6.073a2.25 2.25 0 011.012-1.883l5.658-3.163a2.25 2.25 0 012.16 0l5.658 3.163a2.25 2.25 0 011.012 1.883v4.051a2.25 2.25 0 01-1.012 1.883l-5.658 3.163a2.25 2.25 0 01-2.16 0z', description: 'Weapons, armour, and relics' },
+  { id: 'scenario', link: '/rules/scenario', label: 'Scenarios', icon: 'M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z', description: 'Missions and objectives' },
 ];
 
 function CategoryIcon({ path }: { path: string }) {
@@ -23,13 +18,15 @@ function CategoryIcon({ path }: { path: string }) {
 }
 
 export function RulesHome() {
-  const ruleCountByCategory = useLiveQuery(async () => {
+  const counts: Record<string, number> = useLiveQuery(async () => {
     const rules = await db.rules.where('rulesetId').equals('official-1.0').toArray();
-    const counts: Record<string, number> = {};
+    const result: Record<string, number> = {};
     for (const rule of rules) {
-      counts[rule.category] = (counts[rule.category] || 0) + 1;
+      result[rule.category] = (result[rule.category] || 0) + 1;
     }
-    return counts;
+    result.faction = await db.factions.count();
+    result.equipment = await db.equipmentTemplates.count();
+    return result;
   }) ?? {};
 
   return (
@@ -43,7 +40,7 @@ export function RulesHome() {
         {categories.map((cat, i) => (
           <Link
             key={cat.id}
-            to={`/rules/${cat.id}`}
+            to={cat.link}
             className="group block p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all duration-200 no-underline"
             style={{ animationDelay: `${i * 40}ms` }}
           >
@@ -51,9 +48,9 @@ export function RulesHome() {
               <div className="w-9 h-9 rounded-lg bg-accent-gold/8 flex items-center justify-center text-accent-gold group-hover:bg-accent-gold/15 transition-colors">
                 <CategoryIcon path={cat.icon} />
               </div>
-              {ruleCountByCategory[cat.id] ? (
+              {counts[cat.id] ? (
                 <span className="text-[10px] text-text-muted font-medium bg-bg-tertiary px-1.5 py-0.5 rounded-full">
-                  {ruleCountByCategory[cat.id]}
+                  {counts[cat.id]}
                 </span>
               ) : null}
             </div>

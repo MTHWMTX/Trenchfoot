@@ -35,6 +35,13 @@ export function useEquipmentTemplate(id: string) {
   return useLiveQuery(() => db.equipmentTemplates.get(id), [id]);
 }
 
+export function useAddons(ids: string[]) {
+  return useLiveQuery(
+    async () => ids.length > 0 ? db.addons.where('id').anyOf(ids).toArray() : [],
+    [ids.join(',')]
+  ) ?? [];
+}
+
 export function useWarbands() {
   return useLiveQuery(() => db.warbands.orderBy('updatedAt').reverse().toArray()) ?? [];
 }
@@ -52,21 +59,28 @@ export function useWarbandModels(warbandId: string) {
 
 export function useWarbandCost(warbandId: string) {
   return useLiveQuery(async () => {
+    const warband = await db.warbands.get(warbandId);
+    if (!warband) return { ducats: 0, glory: 0, modelCount: 0 };
+
+    const faction = await db.factions.get(warband.factionId);
+    if (!faction) return { ducats: 0, glory: 0, modelCount: 0 };
+
     const models = await db.warbandModels.where('warbandId').equals(warbandId).toArray();
     let ducats = 0;
     let glory = 0;
 
     for (const model of models) {
-      const template = await db.modelTemplates.get(model.templateId);
-      if (template) {
-        ducats += template.baseCost;
-        glory += template.gloryCost;
+      const modelEntry = faction.modelList.find(m => m.modelId === model.templateId);
+      if (modelEntry) {
+        if (modelEntry.costType === 'ducats') ducats += modelEntry.cost;
+        else glory += modelEntry.cost;
       }
+
       for (const eqId of model.equipmentIds) {
-        const eq = await db.equipmentTemplates.get(eqId);
-        if (eq) {
-          ducats += eq.cost;
-          glory += eq.gloryCost;
+        const eqEntry = faction.equipmentList.find(e => e.equipId === eqId);
+        if (eqEntry) {
+          if (eqEntry.costType === 'ducats') ducats += eqEntry.cost;
+          else glory += eqEntry.cost;
         }
       }
     }

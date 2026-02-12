@@ -16,8 +16,8 @@ export function WarbandCreate() {
 
   const variants = useWarbandVariants(selectedFaction?.id ?? '');
 
-  const faithfulFactions = factions.filter((f) => f.side === 'faithful');
-  const hereticFactions = factions.filter((f) => f.side === 'heretic');
+  const faithfulFactions = factions.filter((f) => f.team === 'heaven');
+  const hereticFactions = factions.filter((f) => f.team === 'hell');
 
   const handleFactionSelect = (faction: Faction) => {
     setSelectedFaction(faction);
@@ -82,8 +82,8 @@ export function WarbandCreate() {
                   onClick={() => handleFactionSelect(f)}
                   className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all cursor-pointer"
                 >
-                  <FactionBadge name={f.name} side={f.side} />
-                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed">{f.description}</div>
+                  <FactionBadge name={f.name} team={f.team} />
+                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
                 </button>
               ))}
             </div>
@@ -99,8 +99,8 @@ export function WarbandCreate() {
                   onClick={() => handleFactionSelect(f)}
                   className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-red/20 hover:bg-bg-tertiary transition-all cursor-pointer"
                 >
-                  <FactionBadge name={f.name} side={f.side} />
-                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed">{f.description}</div>
+                  <FactionBadge name={f.name} team={f.team} />
+                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
                 </button>
               ))}
             </div>
@@ -121,11 +121,11 @@ export function WarbandCreate() {
                 className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all cursor-pointer"
               >
                 <div className="font-semibold text-[13px] text-text-primary">{v.name}</div>
-                <div className="text-text-secondary text-[11px] mt-1 leading-relaxed">{v.description}</div>
-                {v.specialRules.length > 0 && (
+                {v.flavour && <div className="text-text-secondary text-[11px] mt-1 leading-relaxed line-clamp-3">{v.flavour}</div>}
+                {v.rules.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {v.specialRules.map((rule, i) => (
-                      <span key={i} className="text-[9px] text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded">{rule}</span>
+                    {v.rules.map((rule, i) => (
+                      <span key={i} className="text-[9px] text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded">{rule.title}</span>
                     ))}
                   </div>
                 )}

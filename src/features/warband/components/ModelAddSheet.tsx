@@ -1,7 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useModelTemplates } from '../hooks';
+import { useModelTemplates, useFaction } from '../hooks';
 import { addModelToWarband } from '../actions';
-import type { ModelType } from '../../../types';
 
 interface ModelAddSheetProps {
   open: boolean;
@@ -10,20 +9,23 @@ interface ModelAddSheetProps {
   factionId: string;
 }
 
-const typeColors: Record<ModelType, string> = {
-  infantry: 'bg-accent-blue/20 text-blue-300',
-  elite: 'bg-accent-gold/15 text-accent-gold',
-  hero: 'bg-purple-900/30 text-purple-300',
-  monster: 'bg-accent-red/20 text-accent-red-bright',
-};
+function formatDice(val: number | null): string {
+  if (val === null || val === undefined) return '\u2014';
+  if (val > 0) return `+${val}`;
+  return `${val}`;
+}
 
 export function ModelAddSheet({ open, onClose, warbandId, factionId }: ModelAddSheetProps) {
   const templates = useModelTemplates(factionId);
+  const faction = useFaction(factionId);
 
   const handleAdd = async (templateId: string) => {
     await addModelToWarband(warbandId, templateId);
     onClose();
   };
+
+  // Build cost lookup from faction's model list
+  const modelEntryMap = new Map((faction?.modelList ?? []).map(m => [m.modelId, m]));
 
   return (
     <Dialog.Root open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -35,32 +37,40 @@ export function ModelAddSheet({ open, onClose, warbandId, factionId }: ModelAddS
           <Dialog.Description className="text-text-muted text-xs mb-4">Choose a model to add to your warband</Dialog.Description>
 
           <div className="flex flex-col gap-2">
-            {templates.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => handleAdd(t.id)}
-                className="w-full text-left p-3 bg-bg-tertiary border border-border-default rounded-xl hover:border-accent-gold/20 transition-all cursor-pointer flex items-center gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-[13px] text-text-primary">{t.name}</span>
-                    <span className={`text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${typeColors[t.type]}`}>
-                      {t.type}
-                    </span>
+            {templates.map((t) => {
+              const entry = modelEntryMap.get(t.id);
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => handleAdd(t.id)}
+                  className="w-full text-left p-3 bg-bg-tertiary border border-border-default rounded-xl hover:border-accent-gold/20 transition-all cursor-pointer flex items-center gap-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-[13px] text-text-primary">{t.name}</span>
+                      {t.tags.length > 0 && (
+                        <span className="text-[9px] text-text-muted bg-bg-secondary px-1.5 py-0.5 rounded">
+                          {t.tags[0]}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px]">
+                      {entry && (
+                        <span className={entry.costType === 'ducats' ? 'text-accent-gold' : 'text-purple-300'}>
+                          {entry.cost} {entry.costType}
+                        </span>
+                      )}
+                      {entry && entry.limitMax > 0 && <span className="text-text-muted">Max: {entry.limitMax}</span>}
+                      <span className="text-text-muted">
+                        MV{t.stats.movement} MEL{formatDice(t.stats.melee)} ARM{t.stats.armour}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <span className="text-accent-gold">{t.baseCost} ducats</span>
-                    {t.gloryCost > 0 && <span className="text-purple-300">{t.gloryCost} glory</span>}
-                    {t.maxCount > 0 && <span className="text-text-muted">Max: {t.maxCount}</span>}
-                    <span className="text-text-muted">
-                      MV{t.stats.movement} MEL{t.stats.melee}+ ARM{t.stats.armour}+ W{t.stats.wounds}
-                    </span>
-                  </div>
-                </div>
-                <svg className="w-4 h-4 text-text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14m-7-7h14" /></svg>
-              </button>
-            ))}
+                  <svg className="w-4 h-4 text-text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14m-7-7h14" /></svg>
+                </button>
+              );
+            })}
           </div>
         </Dialog.Content>
       </Dialog.Portal>

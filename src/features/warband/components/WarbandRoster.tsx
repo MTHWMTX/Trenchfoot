@@ -58,7 +58,7 @@ export function WarbandRoster() {
 
       {/* Header */}
       <div className="mb-4">
-        {faction && <FactionBadge name={faction.name} side={faction.side} />}
+        {faction && <FactionBadge name={faction.name} team={faction.team} />}
         <h1 className="text-xl font-bold mt-2">{warband.name}</h1>
       </div>
 
@@ -80,6 +80,7 @@ export function WarbandRoster() {
           <div key={model.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 30}ms`, animationFillMode: 'both' }}>
             <ModelCard
               model={model}
+              faction={faction}
               onTap={() => setEditingModelId(model.id)}
               onDelete={() => removeModelFromWarband(model.id)}
             />
@@ -108,6 +109,7 @@ export function WarbandRoster() {
       {/* Edit model sheet */}
       <ModelEditSheet
         model={editingModel ?? null}
+        faction={faction}
         onClose={() => setEditingModelId(null)}
       />
     </div>
