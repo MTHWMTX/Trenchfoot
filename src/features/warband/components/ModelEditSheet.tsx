@@ -117,6 +117,34 @@ export function ModelEditSheet({ model, faction, onClose }: ModelEditSheetProps)
             ))}
           </div>
 
+          {/* Running cost summary */}
+          {(() => {
+            const modelEntry = faction?.modelList.find(m => m.modelId === model.templateId);
+            let totalDucats = 0;
+            let totalGlory = 0;
+            if (modelEntry) {
+              if (modelEntry.costType === 'ducats') totalDucats += modelEntry.cost;
+              else totalGlory += modelEntry.cost;
+            }
+            for (const eqId of selectedEquipment) {
+              const entry = equipEntryMap.get(eqId);
+              if (entry) {
+                if (entry.costType === 'ducats') totalDucats += entry.cost;
+                else totalGlory += entry.cost;
+              }
+            }
+            return (
+              <div className="flex items-center gap-3 mb-4 px-3 py-2 bg-bg-tertiary rounded-lg border border-border-default">
+                <span className="text-[10px] text-text-muted uppercase tracking-wider">Total Cost</span>
+                <div className="flex items-center gap-2 ml-auto">
+                  {totalDucats > 0 && <span className="text-[12px] font-semibold text-accent-gold">{totalDucats}d</span>}
+                  {totalGlory > 0 && <span className="text-[12px] font-semibold text-purple-300">{totalGlory}g</span>}
+                  {totalDucats === 0 && totalGlory === 0 && <span className="text-[12px] text-text-muted">Free</span>}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Blurb */}
           {template.blurb && (
             <div className="mb-4 p-3 bg-bg-tertiary rounded-lg">

@@ -104,6 +104,7 @@ export function WarbandRoster() {
         onClose={() => setAddingModel(false)}
         warbandId={warband.id}
         factionId={warband.factionId}
+        modelCountByTemplate={cost.modelCountByTemplate}
       />
 
       {/* Edit model sheet */}

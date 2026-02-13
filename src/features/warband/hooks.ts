@@ -57,19 +57,29 @@ export function useWarbandModels(warbandId: string) {
   ) ?? [];
 }
 
+const warbandCostDefault = {
+  ducats: 0, glory: 0, modelCount: 0,
+  ducatLimit: 0, gloryLimit: 0, modelLimit: 0,
+  ducatsRemaining: 0, gloryRemaining: 0, modelsRemaining: 0,
+  modelCountByTemplate: {} as Record<string, number>,
+};
+
 export function useWarbandCost(warbandId: string) {
   return useLiveQuery(async () => {
     const warband = await db.warbands.get(warbandId);
-    if (!warband) return { ducats: 0, glory: 0, modelCount: 0 };
+    if (!warband) return warbandCostDefault;
 
     const faction = await db.factions.get(warband.factionId);
-    if (!faction) return { ducats: 0, glory: 0, modelCount: 0 };
+    if (!faction) return warbandCostDefault;
 
     const models = await db.warbandModels.where('warbandId').equals(warbandId).toArray();
     let ducats = 0;
     let glory = 0;
+    const modelCountByTemplate: Record<string, number> = {};
 
     for (const model of models) {
+      modelCountByTemplate[model.templateId] = (modelCountByTemplate[model.templateId] ?? 0) + 1;
+
       const modelEntry = faction.modelList.find(m => m.modelId === model.templateId);
       if (modelEntry) {
         if (modelEntry.costType === 'ducats') ducats += modelEntry.cost;
@@ -85,6 +95,13 @@ export function useWarbandCost(warbandId: string) {
       }
     }
 
-    return { ducats, glory, modelCount: models.length };
-  }, [warbandId]) ?? { ducats: 0, glory: 0, modelCount: 0 };
+    return {
+      ducats, glory, modelCount: models.length,
+      ducatLimit: warband.ducatLimit, gloryLimit: warband.gloryLimit, modelLimit: warband.modelLimit,
+      ducatsRemaining: warband.ducatLimit - ducats,
+      gloryRemaining: warband.gloryLimit - glory,
+      modelsRemaining: warband.modelLimit - models.length,
+      modelCountByTemplate,
+    };
+  }, [warbandId]) ?? warbandCostDefault;
 }

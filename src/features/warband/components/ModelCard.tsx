@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import type { WarbandModel, Faction } from '../../../types';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 
 interface ModelCardProps {
   model: WarbandModel;
@@ -16,6 +18,7 @@ function formatDice(val: number | null): string {
 }
 
 export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const template = useLiveQuery(() => db.modelTemplates.get(model.templateId), [model.templateId]);
   const equipment = useLiveQuery(
     () => Promise.all(model.equipmentIds.map((id) => db.equipmentTemplates.get(id))),
@@ -58,7 +61,7 @@ export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
       {/* Delete button */}
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+        onClick={(e) => { e.stopPropagation(); setConfirmDelete(true); }}
         className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-bg-tertiary text-text-muted hover:bg-accent-red/20 hover:text-accent-red-bright transition-colors opacity-0 group-hover:opacity-100 border-none cursor-pointer"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -112,6 +115,16 @@ export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
         {totalDucats > 0 && <span className="text-[11px] text-accent-gold font-semibold">{totalDucats} ducats</span>}
         {totalGlory > 0 && <span className="text-[11px] text-purple-300 font-semibold">{totalGlory} glory</span>}
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Remove Model"
+        description={`Remove ${model.customName || template.name} from this warband?`}
+        confirmLabel="Remove"
+        confirmVariant="danger"
+        onConfirm={onDelete}
+      />
     </div>
   );
 }

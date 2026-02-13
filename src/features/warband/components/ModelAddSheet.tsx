@@ -7,6 +7,7 @@ interface ModelAddSheetProps {
   onClose: () => void;
   warbandId: string;
   factionId: string;
+  modelCountByTemplate?: Record<string, number>;
 }
 
 function formatDice(val: number | null): string {
@@ -15,7 +16,7 @@ function formatDice(val: number | null): string {
   return `${val}`;
 }
 
-export function ModelAddSheet({ open, onClose, warbandId, factionId }: ModelAddSheetProps) {
+export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountByTemplate = {} }: ModelAddSheetProps) {
   const templates = useModelTemplates(factionId);
   const faction = useFaction(factionId);
 
@@ -61,7 +62,11 @@ export function ModelAddSheet({ open, onClose, warbandId, factionId }: ModelAddS
                           {entry.cost} {entry.costType}
                         </span>
                       )}
-                      {entry && entry.limitMax > 0 && <span className="text-text-muted">Max: {entry.limitMax}</span>}
+                      {entry && entry.limitMax > 0 && (() => {
+                        const count = modelCountByTemplate[t.id] ?? 0;
+                        const colorClass = count > entry.limitMax ? 'text-accent-red-bright' : count >= entry.limitMax ? 'text-accent-gold' : 'text-text-muted';
+                        return <span className={colorClass}>{count}/{entry.limitMax}</span>;
+                      })()}
                       <span className="text-text-muted">
                         MV{t.stats.movement} MEL{formatDice(t.stats.melee)} ARM{t.stats.armour}
                       </span>

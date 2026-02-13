@@ -5,9 +5,11 @@ import { FactionBadge } from './FactionBadge';
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 
 function WarbandCard({ warband }: { warband: { id: string; name: string; factionId: string; gameType: string } }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const faction = useLiveQuery(() => db.factions.get(warband.factionId), [warband.factionId]);
   const modelCount = useLiveQuery(
     () => db.warbandModels.where('warbandId').equals(warband.id).count(),
@@ -51,7 +53,7 @@ function WarbandCard({ warband }: { warband: { id: string; name: string; faction
               </button>
               <button
                 type="button"
-                onClick={async () => { await deleteWarband(warband.id); setShowMenu(false); }}
+                onClick={() => { setShowMenu(false); setConfirmDelete(true); }}
                 className="w-full text-left px-3 py-2 text-[12px] text-accent-red-bright hover:bg-accent-red/10 transition-colors border-none bg-transparent cursor-pointer"
               >
                 Delete
@@ -60,6 +62,16 @@ function WarbandCard({ warband }: { warband: { id: string; name: string; faction
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete Warband"
+        description={`Are you sure you want to delete "${warband.name}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        confirmVariant="danger"
+        onConfirm={() => deleteWarband(warband.id)}
+      />
     </div>
   );
 }
