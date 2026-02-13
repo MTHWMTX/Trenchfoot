@@ -12,7 +12,7 @@ interface RulesState {
 }
 
 export const useRulesStore = create<RulesState>((set) => ({
-  activeRulesetId: 'official-1.0',
+  activeRulesetId: 'official-1.0.2',
   selectedKeywordId: null,
   selectedModelId: null,
   selectedEquipmentId: null,

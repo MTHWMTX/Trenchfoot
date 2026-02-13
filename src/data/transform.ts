@@ -161,7 +161,7 @@ function flattenRules(rules: { title: string; description: RawDescription[] }[])
 
 // --- Transform Functions ---
 
-const RULESET_ID = 'official-1.0';
+const RULESET_ID = 'official-1.0.2';
 
 export function transformFactions(raw: RawFaction[]): Faction[] {
   return raw.map(f => ({

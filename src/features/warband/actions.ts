@@ -14,7 +14,7 @@ export async function createWarband(opts: {
     name: opts.name,
     factionId: opts.factionId,
     variantId: opts.variantId,
-    rulesetId: 'official-1.0',
+    rulesetId: 'official-1.0.2',
     gameType: opts.gameType,
     ducatLimit: opts.gameType === 'standard' ? 900 : 700,
     gloryLimit: opts.gameType === 'standard' ? 9 : 5,

@@ -17,15 +17,15 @@ import rawVariants from './compendium/variants.json';
 import rawAddons from './compendium/addons.json';
 import rawGlossary from './compendium/glossary.json';
 
-const OFFICIAL_RULESET_ID = 'official-1.0';
+const OFFICIAL_RULESET_ID = 'official-1.0.2';
 
 const ruleset: Ruleset = {
   id: OFFICIAL_RULESET_ID,
-  name: 'Official Rules 1.0',
-  version: '1.0.0',
+  name: 'Official Rules 1.0.2',
+  version: '1.0.2',
   type: 'official',
   createdAt: new Date('2025-01-01'),
-  updatedAt: new Date('2025-01-01'),
+  updatedAt: new Date('2026-01-01'),
 };
 
 // Core rules content (kept as structured rules for the rules reference section)
@@ -38,9 +38,9 @@ const rules: Rule[] = [
     category: 'core',
     content: `Trench Crusade is a skirmish-scale tabletop miniatures game set in a horrifying alternate timeline of the Great War. Each player fields a small, elite WARBAND of miniatures from one of many diverse FACTIONS, taking turns activating one model at a time.
 
-Each model performs ACTIONS during their activation, such as moving, shooting, or fighting in melee combat. The game uses two six-sided dice (2D6) to resolve actions, with modifiers adding or removing dice from the pool.
+The game uses two six-sided dice (2D6) to resolve actions via Success Rolls. +DICE modifiers add extra dice to the pool (pick the two highest), while -DICE modifiers also add dice but you pick the two lowest. +DICE and -DICE cancel each other out in pairs before rolling.
 
-A game is played over a series of ROUNDS. Each round, players alternate activating their models until all models have been activated. The player who achieves their SCENARIO objectives wins the game.`,
+A game is played over a series of TURNS. Each Turn has three phases: the **Initiative Phase**, the **Activation Phase**, and the **Morale Phase**. The player who achieves their SCENARIO objectives wins the game.`,
     order: 1,
     keywordIds: [],
   },
@@ -50,11 +50,16 @@ A game is played over a series of ROUNDS. Each round, players alternate activati
     title: 'Activations & Actions',
     slug: 'activations',
     category: 'core',
-    content: `During a ROUND, players take turns activating one model at a time. The player with the INITIATIVE activates first. After a model is activated, the other player activates one of their models, and so on.
+    content: `During a Turn, players take turns activating one model at a time. The player with the **INITIATIVE** activates first — this is the player with the fewest non-Down, non-Out of Action models on the battlefield (roll off on ties). After a model is activated, the other player activates one of their models, and so on.
 
-When a model is activated, it may perform ACTIONS. Actions include attacking (shooting or melee), dashing, and using special abilities. Actions are resolved on the Action Success Chart by rolling 2D6 with any applicable +DICE or -DICE modifiers.
+When activated, a model may perform ACTIONS. Each type of ACTION can only be performed once per Activation unless stated otherwise. The available actions are:
+- **Move OR Charge OR Retreat** (only one of these per Activation)
+- **Dash** (additional movement)
+- **Shoot** (ranged attack)
+- **Fight** (melee attack)
+- **Other** (special abilities)
 
-RISKY ACTIONS are special actions that end the model's activation immediately if they fail the Action Success Chart roll.`,
+Actions requiring a roll use the **Success Roll Table** (2D6 with +DICE/-DICE modifiers). **RISKY ACTIONS** end the model's Activation immediately if the Success Roll fails.`,
     order: 2,
     keywordIds: [],
   },
@@ -64,11 +69,13 @@ RISKY ACTIONS are special actions that end the model's activation immediately if
     title: 'Movement',
     slug: 'movement',
     category: 'core',
-    content: `Models move during their activation. A model can move up to its MOVEMENT value in inches. Models may also DASH as an action to move an additional distance.
+    content: `A model can **Move** up to its Movement Characteristic in inches. Models may also **Dash** as a separate action to move again (requires a RISKY Success Roll).
 
-Models cannot move through enemy models. A model that moves into base contact with an enemy is considered to have CHARGED. Charging models gain a bonus D6 of movement distance.
+Models cannot move within 1" of enemy models except when Charging. A **Charge** targets a visible enemy within 12" — roll a D6 and add it to the model's Movement Characteristic (max 12" total). Models with the HEAVY keyword do not receive the Charge Bonus. If an enemy model is interposed in the charge path, the charging model must charge that model instead.
 
-TERRAIN affects movement — models must climb over obstacles, and difficult terrain may reduce movement speed.`,
+A model within 1" of an enemy may **Retreat** to disengage, but the enemy gets to make a free melee attack against it first.
+
+**Terrain** affects movement: DIFFICULT TERRAIN costs double movement (1" counts as 2"), DANGEROUS TERRAIN requires a Risky Success Roll (failure causes an Injury Roll), and IMPASSABLE TERRAIN cannot be crossed. Models can climb sheer surfaces (Risky Success Roll), jump gaps (up to half Movement), and jump down (free if under 3", otherwise Injury Roll for falling).`,
     order: 3,
     keywordIds: [],
   },
@@ -78,11 +85,19 @@ TERRAIN affects movement — models must climb over obstacles, and difficult ter
     title: 'Ranged Combat',
     slug: 'shooting',
     category: 'core',
-    content: `A model may attack with a ranged weapon during its activation. The model must have LINE OF SIGHT to the target and the target must be within the weapon's RANGE.
+    content: `A model may take a **Shoot** ACTION to make a Ranged Attack. The sequence is:
+1. Choose a Ranged Weapon
+2. Pick a visible target within range
+3. Check Line of Sight
+4. Check Range (within weapon's Range value)
+5. Determine modifiers (Elevated: +1 DICE, Cover: -1 DICE, Long Range: -1 DICE)
+6. Take the Success Roll
 
-To shoot, roll 2D6 (modified by the model's ranged dice modifier and other factors) on the Action Success Chart. On a success, the target takes a hit and must roll on the Injury Chart.
+On a success, make an Injury Roll against the target. On a Critical Success (12+), add +1 INJURY DICE to the Injury Roll.
 
-HEAVY weapons cannot be fired if the model moved this activation. ASSAULT weapons allow the model to charge after shooting.`,
+**Shooting Into Melee**: If the target is within 1" of a friendly model, roll a D6 on a miss — on 1-3, a friendly model in that combat is hit instead.
+
+**HEAVY** weapons cannot be used in the same Activation as a Move, Charge, Retreat, or Dash action. **ASSAULT** weapons do not prevent the model from taking a Charge or Fight action in the same Activation.`,
     order: 4,
     keywordIds: [],
   },
@@ -92,11 +107,17 @@ HEAVY weapons cannot be fired if the model moved this activation. ASSAULT weapon
     title: 'Melee Combat',
     slug: 'melee-combat',
     category: 'core',
-    content: `A model in base contact with an enemy may attack in melee. Roll 2D6 (modified by the model's melee dice modifier) on the Action Success Chart. On a success, the target takes a hit.
+    content: `A model within 1" of an enemy may take a **Fight** ACTION to make a Melee Attack. The sequence is:
+1. Choose a Melee Weapon
+2. Choose a target within 1"
+3. Determine modifiers (Diving Charge: +1 DICE, Defended Obstacle: -1 DICE to Injury, Off-Hand Weapon: -1 DICE)
+4. Take the Success Roll
 
-After a melee attack, the defending model may make a RIPOSTE — a free melee attack back against the attacker.
+On a success, make an Injury Roll. On a Critical Success (12+), add +1 INJURY DICE.
 
-Models with FEAR cause enemies to suffer -1 DICE in melee against them. Models with the STRONG keyword can wield two-handed weapons in one hand.`,
+A model with multiple melee weapons can make one attack with each, but the second weapon counts as an Off-Hand Weapon (-1 DICE). Weapons with **CLEAVE (X)** allow X attacks with that weapon per Fight ACTION.
+
+**FEAR** causes -1 DICE to Melee Attacks targeting the model. Models that cause FEAR are immune to FEAR themselves.`,
     order: 5,
     keywordIds: [],
   },
@@ -106,13 +127,17 @@ Models with FEAR cause enemies to suffer -1 DICE in melee against them. Models w
     title: 'Injuries & Blood Markers',
     slug: 'injuries',
     category: 'core',
-    content: `When a model is hit, roll 2D6 on the Injury Chart (modified by armour and weapon effects). Results range from the model being unharmed to being taken Out of Action.
+    content: `When a model is hit, roll 2D6 on the **Injury Table** (modified by +/- INJURY DICE and +/- INJURY MODIFIERS from armour and weapon effects). Note: INJURY DICE and INJURY MODIFIERS are distinct from the +/-DICE used for Success Rolls. The maximum cumulative -INJURY MODIFIER is -3.
 
-Models taken Out of Action are removed from the battlefield. A BLOOD MARKER is placed where they fell. Blood Markers represent mounting casualties and affect morale.
+**Injury Table results**: 3 or less = No Effect, 4-7 = Minor Wound (BLOOD MARKER placed), 8-9 = Down (model is knocked down), 10+ = Out of Action (model removed).
 
-BLESSING MARKERS provide +1 DICE to actions and -1 DICE to injury rolls. Blood Markers provide -1 DICE to the wounded model's actions and +1 DICE to injury rolls against them.
+**BLOOD MARKERS**: Each can be spent by either player — as -1 DICE to the wounded model's Success Rolls, or as +1 INJURY DICE when rolling injuries against the model. A maximum of 6 BLOOD MARKERS can be on a model. Spending 6 BLOOD MARKERS (or 3 if the target is Down) converts the Injury Roll to a **Bloodbath Roll** — roll 3D6 and add all three together.
 
-When a warband accumulates enough Blood Markers, the player must take a MORALE TEST. Failure can cause the warband to flee the battle.`,
+**BLESSING MARKERS**: Each can be spent as +1 DICE to a Success Roll, or as -1 INJURY DICE to an Injury Roll made against the model. Maximum of 6 per model.
+
+**Down**: A model taken Down has its Activation end, suffers -1 DICE to Success Rolls, and enemies gain +1 INJURY DICE against it in melee. It can stand up on its next Activation at the cost of half its movement.
+
+**Morale Phase**: When half or more of a warband's models are Down or Out of Action, a Morale Check is required. If a LEADER is on the battlefield (not Down or Out of Action), add +1 DICE. A failed Morale Check makes the warband **Shaken** (all Success Rolls become Risky). A second consecutive failure means the warband flees and loses.`,
     order: 6,
     keywordIds: [],
   },
@@ -122,16 +147,17 @@ When a warband accumulates enough Blood Markers, the player must take a MORALE T
     title: 'Campaign Play',
     slug: 'campaign-play',
     category: 'core',
-    content: `Trench Crusade supports campaign play, where your WARBAND grows and evolves over multiple games. After each game, you go through the POST-GAME SEQUENCE:
+    content: `Trench Crusade supports campaign play, where your WARBAND grows and evolves over a 12-game campaign. Your warband has a **Threshold Value** (starting at 700 ducats) that grows after each battle, and a **Maximum Field Strength** that scales from 10 to 22 models.
 
-1. **Casualties**: Roll on the Injury Table for each model that was taken Out of Action.
-2. **Experience**: Models that participated gain EXPERIENCE POINTS based on their performance.
-3. **Income**: Your warband earns DUCATS based on the scenario and performance.
-4. **Exploration**: Send models to explore for useful items and locations.
-5. **Recruit & Equip**: Spend ducats to recruit new models or purchase EQUIPMENT.
-6. **Advance**: Models with enough XP may gain ADVANCES — new skills and abilities.
+After each game, you go through the **Campaign Phase**:
 
-Campaign play adds strategic depth beyond individual games, as you must manage your warband's growth and recovery.`,
+1. **Trauma Step**: Roll on the Trauma Table for each model taken Out of Action. ELITE models use a D66 table (results range from death to full recovery). Non-Elite models roll a D6 (1-2 = dead, 3+ = survive).
+2. **Promotions & Experience**: Models earn Promotion Dice. Roll on one of four Skill Tables — Melee & Strength, Ranged, Stealth & Speed, or Wildcard — to gain new abilities.
+3. **Reinforcements**: Recruit new models up to your Threshold Value.
+4. **Exploration**: Roll Exploration Dice on tiered Location Tables (Common, Rare, Legendary) to discover items, ducats, or special encounters.
+5. **Quartermaster**: Spend ducats to buy equipment, form Fireteams, and reorganize.
+
+Your warband also has a **Patron** who provides unique campaign skills. **Glory Points** earned from Glorious Deeds can purchase powerful **Glory Items**.`,
     order: 7,
     keywordIds: [],
   },
@@ -141,15 +167,21 @@ Campaign play adds strategic depth beyond individual games, as you must manage y
     title: 'Equipment',
     slug: 'equipment',
     category: 'core',
-    content: `Models carry various types of EQUIPMENT, including ranged weapons, melee weapons, armour, and special items.
+    content: `Models carry **Battlekit** — ranged weapons, melee weapons, armour, grenades, and equipment. Battlekit is purchased from your faction's Armoury Tables.
 
-**Ranged Weapons** have a Range value and may have keywords like ASSAULT (can charge after shooting), HEAVY (can't move and shoot), CRITICAL (bonus injury dice on criticals), and FIRE/GAS/SHRAPNEL (inflict additional Blood Markers).
+**Weapon Limits**: A model can carry up to 2 one-handed weapons (ranged or melee) or 1 two-handed weapon, plus grenades. A Shield replaces one hand. Models with the STRONG keyword can use a 2-handed melee weapon in one hand.
 
-**Melee Weapons** are used in close combat. Some are CUMBERSOME (always require two hands) or have CRITICAL hits.
+**Key Weapon Keywords**:
+- **ASSAULT**: Does not prevent Charge or Fight actions in the same Activation
+- **HEAVY**: Cannot move and shoot in the same Activation; no Charge Bonus; limit 1 per model
+- **CRITICAL**: +2 INJURY DICE (instead of +1) on a Critical Success
+- **FIRE/GAS/SHRAPNEL**: Place 1 extra BLOOD MARKER after the Injury Roll, even on No Effect
+- **AUTOMATIC (X)**: Make X Ranged Attacks per Shoot action
+- **CLEAVE (X)**: Make X Melee Attacks per Fight action
+- **PISTOL**: Can be used as ranged or melee weapon in the same Activation
+- **RELOAD**: Model's Activation ends after attacking with this weapon
 
-**Armour** provides modifiers to injury rolls, making models harder to take out. Only one piece of HEADGEAR can be worn.
-
-**Equipment costs vary by faction** — each faction has its own armoury with different prices, restrictions, and available items. Some items cost GLORY instead of DUCATS.`,
+**Armour** provides -INJURY MODIFIERS to Injury Rolls. Only one piece of **HEADGEAR** can be worn. **Equipment costs vary by faction** — each has its own armoury with different prices and restrictions. Some items cost GLORY instead of DUCATS.`,
     order: 8,
     keywordIds: [],
   },

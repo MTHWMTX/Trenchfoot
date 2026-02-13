@@ -65,6 +65,15 @@ export class TrenchCrusadeDB extends Dexie {
         await tx.table(name).clear();
       }
     });
+
+    // v8: Re-seed for 1.0.2 rules update (keywords, rules fixes)
+    this.version(8).stores({}).upgrade(async (tx) => {
+      const tables = ['rules', 'keywords', 'rulesets', 'factions',
+        'warbandVariants', 'modelTemplates', 'equipmentTemplates', 'addons'];
+      for (const name of tables) {
+        await tx.table(name).clear();
+      }
+    });
   }
 }
 

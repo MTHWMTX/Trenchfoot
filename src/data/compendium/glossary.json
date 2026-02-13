@@ -9,10 +9,10 @@
         "name": "+Dice",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Modifier for ACTION rolls. For each +DICE, add one dice to the dice pool of the 2D6 roll you are about to make. +1 DICE thus makes the roll a total of 3D6. Then roll all the dice and pick the two highest. If two +DICE are added, roll 4D6 and pick the two highest, and so on.",
+            "content": "Dice that are added to Success Rolls. For each +DICE, add one die to the pool of the 2D6 roll. Roll all dice and pick the two highest. If the Keyword applies to a Weapon, the dice are only added to Success Rolls for attacks made with it. +DICE and -DICE cancel each other out in pairs before rolling.",
             "subcontent":   [],
             "glossary": [
-                {"val": "ACTION", "id": "gl_action"}
+                {"val": "-DICE", "id": "gl_minusdice"}
             ]
         }]
     },
@@ -26,11 +26,44 @@
         "name": "-Dice",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Modifier for ACTION rolls. For each -DICE, add one dice to the dice pool of the 2D6 roll you are about to make. Thus -1 DICE makes the roll a total of 3D6. Then roll all the dice and pick the two lowest. If two -DICE are added, roll 4D6 and pick the two lowest, and so on.",
+            "content": "Dice that are added to Success Rolls. For each -DICE, add one die to the pool of the 2D6 roll. Roll all dice and pick the two lowest. If the Keyword applies to a Weapon, the dice are only added to Success Rolls for attacks made with it. +DICE and -DICE cancel each other out in pairs before rolling.",
             "subcontent":   [],
             "glossary": [
-                {"val": "ACTION", "id": "gl_action"}
+                {"val": "+DICE", "id": "gl_plusdice"}
             ]
+        }]
+    },
+    {
+        "id": "gl_plusinjurydice",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "dice"}
+        ],
+        "name": "+/- Injury Dice",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Dice that are added to Injury Rolls. These work like +DICE and -DICE but apply to Injury Rolls instead of Success Rolls. +INJURY DICE means you add extra dice and pick the two highest; -INJURY DICE means you add extra dice and pick the two lowest. If the Keyword applies to a Weapon, the dice are only added to Injury Rolls for attacks made with it.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "+DICE", "id": "gl_plusdice"},
+                {"val": "-DICE", "id": "gl_minusdice"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_injurymodifier",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "dice"}
+        ],
+        "name": "+/- Injury Modifier",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Modifiers that are applied to the result of an Injury Roll after the dice are totalled. If the Keyword applies to a Weapon, the modifier is only added to Injury Rolls for attacks made with it. The maximum cumulative -INJURY MODIFIER is -3.",
+            "subcontent":   [],
+            "glossary": []
         }]
     },
     {
@@ -43,11 +76,65 @@
         "name": "Action",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Covers attacking with Melee and Ranged Weapons, Dashing and any other activity where the player must roll on the Action Success Chart to make an Action. This roll can be modified by the opposing player by using BLOOD MARKERS. Each marker causes -1 DICE penalty to the roll.",
+            "content": "An activity a model can carry out when it is Activated. Common ACTIONS include Move, Dash, Shoot and Fight. Each type of ACTION can only be performed once per Activation unless stated otherwise.",
             "subcontent":   [],
             "glossary": [
-                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"}
+                {"val": "RISKY ACTION", "id": "gl_riskyaction"}
             ]
+        }]
+    },
+    {
+        "id": "gl_ammunition",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Ammunition (Keyword)",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "If a model has a piece of Battlekit with this Keyword, it will use it in the next game that it takes part in. When the model is deployed, say which Ranged Weapon the Battlekit will be used for. It gains the (KEYWORD) until the end of the game. The Ranged Weapon you choose cannot already have the BLAST, FIRE, GAS, or SHRAPNEL Keywords, and cannot have more than one type of AMMUNITION.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLAST", "id": "gl_blastx"},
+                {"val": "FIRE", "id": "gl_fire"},
+                {"val": "GAS", "id": "gl_gas"},
+                {"val": "SHRAPNEL", "id": "gl_shrapnel"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_armourpiercing",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Armour Piercing",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A Weapon with this Keyword reduces the target's total -INJURY MODIFIER from its Armour Characteristic, and/or any Armour or Shields it has by 1, to a minimum of 0. For example, if a target had Standard Armour and a Trench Shield, the -INJURY MODIFIER would be lowered from -2 to -1.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "IMPERVIOUS", "id": "gl_impervious"},
+                {"val": "IGNORE ARMOUR", "id": "gl_ignorearmour"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_artificial",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Artificial",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "This model is not of natural biological origin but is instead constructed from non-organic elements. ARTIFICIAL is a Tag with no inherent Effect \u2014 other rules may reference it.",
+            "subcontent":   [],
+            "glossary": []
         }]
     },
     {
@@ -61,9 +148,30 @@
         "name": "Assault",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": " Ranged attacks made with weapons that have this Keyword do not prevent a model from charging during the same activation. A charge may only be made if a single ranged attack is made with a weapon with this Keyword, regardless of any other rules that the weapon might have.",
+            "content": "Ranged Attacks made with Weapons that have this Keyword do not prevent a model from taking a Charge or Fight ACTION during the same Activation.",
             "subcontent":   [],
-            "glossary": []
+            "glossary": [
+                {"val": "ACTION", "id": "gl_action"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_automaticx",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Automatic (X)",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When you take a Shoot ACTION and choose a Weapon with this Keyword to make a Ranged Attack, you can make a number of Ranged Attacks with this Weapon equal to X, one after another. The attacks can target different enemy models if desired, as long as they are all within 6\" of each other. Resolve each attack one at a time. Any BLOOD MARKERS or BLESSING MARKERS that are spent only modify the Injury Roll for the Ranged Attack they are spent on.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
+                {"val": "BLESSING MARKERS", "id": "gl_blessingmarker"}
+            ]
         }]
     },
     {
@@ -76,9 +184,43 @@
         "name": "Black Grail",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the Black Grail faction.",
+            "content": "This model is part of the Cult of the Black Grail Faction.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_blastx",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Blast (X\")",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A Ranged Weapon with BLAST (X\") has a blast radius in inches equal to X (including vertically). The target can be an enemy model or a visible point on the battlefield within Line of Sight and range. On a Failure, the attack misses unless the weapon has the SCATTER Keyword. On a Success or Critical Success, every model with Line of Sight to the target and within the blast radius is hit. Friendly models within 1\" of a hit enemy are also hit. If you roll a Critical Success, only add the extra INJURY DICE to the roll for the original target.",
             "subcontent":   [],
             "glossary": [
+                {"val": "SCATTER", "id": "gl_scatter"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_blessedx",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Blessed (X)",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When you deploy a model with this Keyword for the first time in a game, place a number of BLESSING MARKERS beside the model equal to X.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLESSING MARKERS", "id": "gl_blessingmarker"}
             ]
         }]
     },
@@ -92,11 +234,27 @@
         "name": "Blessing Marker",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Supernatural or chemical temporary enhancement. Each marker can be converted into +1 DICE for any ACTION the model takes, or into -1 DICE when rolling injuries for this model. ",
+            "content": "The model is under the influence of a supernatural or chemical enhancement that provides temporary benefits. Each marker can be spent as +1 DICE to a Success Roll, or as -1 INJURY DICE to an Injury Roll made against this model. A maximum of 6 BLESSING MARKERS can be on a model at any time.",
             "subcontent":   [],
             "glossary": [
                 {"val": "+1 DICE", "id": "gl_plusdice"},
-                {"val": "ACTION", "id": "gl_action"},
+                {"val": "-1 INJURY DICE", "id": "gl_plusinjurydice"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_block",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Block",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Add -1 DICE for Melee Attacks targeting a model with this Keyword, or that has a Weapon that has this Keyword, if the attacker made a Charge ACTION before making the attack this Turn.",
+            "subcontent":   [],
+            "glossary": [
                 {"val": "-1 DICE", "id": "gl_minusdice"}
             ]
         }]
@@ -111,44 +269,47 @@
         "name": "Blood Marker",
         "description":  [
             {
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Damage inflicted by attacks. Each can be converted into -1 DICE for any ACTION the wounded model takes or into +1 DICE when rolling injuries for this model.",
-            "subcontent":   [],
-            "glossary": [
-                {"val": "+1 DICE", "id": "gl_plusdice"},
-                {"val": "ACTION", "id": "gl_action"},
-                {"val": "-1 DICE", "id": "gl_minusdice"}
-            ]
-            },
-            {
-            "tags": [{"tag_name": "desc_type", "val": "effect"}],
-            "content": "BLOODBATH:",
-            "subcontent":   [
-                {
                 "tags": [{"tag_name": "desc_type", "val": "desc"}],
-                "content": "You can roll an additional D6 on Injury rolls at the cost of 6 BLOOD MARKERS on any model, or at the cost of 3 BLOOD MARKERS if the target is Down. This means that instead of rolling 2D6 on your typical weapon, you roll 3D6 on your injury roll and add the numbers together. Weapons such as Artillery Witch’s Infernal Bomb would therefore roll 4D6 and add the results together (3D6+1D6).",
+                "content": "BLOOD MARKERS are placed on models that suffer an injury. Each can be spent by either player \u2014 as -1 DICE to the wounded model's Success Rolls, or as +1 INJURY DICE when rolling Injury Rolls against the model. A maximum of 6 BLOOD MARKERS can be on a model at any time.",
                 "subcontent":   [],
                 "glossary": [
-                    {"val": "D6", "id": "gl_plusdice"}
+                    {"val": "-1 DICE", "id": "gl_minusdice"},
+                    {"val": "+1 INJURY DICE", "id": "gl_plusinjurydice"}
                 ]
-                }]
+            },
+            {
+                "tags": [{"tag_name": "desc_type", "val": "effect"}],
+                "content": "BLOODBATH:",
+                "subcontent":   [
+                    {
+                        "tags": [{"tag_name": "desc_type", "val": "desc"}],
+                        "content": "You can spend 6 BLOOD MARKERS from a model (or 3 if the target is Down) to convert the Injury Roll into a Bloodbath Roll. Roll 3D6 and add all three dice together. +INJURY DICE and -INJURY DICE are added normally, but you pick the 3 highest or lowest instead of 2. With the DEADLY keyword, Bloodbath Rolls use 4D6.",
+                        "subcontent":   [],
+                        "glossary": [
+                            {"val": "DEADLY", "id": "gl_deadly"}
+                        ]
+                    }
+                ]
             }
         ]
     },
     {
-        "id": "gl_infectionmarker",
+        "id": "gl_cleavex",
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "dice"}
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
         ],
-        "name": "Infection Marker",
+        "name": "Cleave (X)",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Weakness brought about by plague. Each can be converted as if they were a BLOOD MARKER. If a model has at least one Infection Marker when activated, it gains +1 Infection Marker.",
+            "content": "When you take a Fight ACTION and choose a Weapon with this Keyword to make a Melee Attack, you can make a number of Melee Attacks with this Weapon equal to X, one after another. The attacks can target different enemy models if desired. Resolve each attack one at a time. Any BLOOD MARKERS or BLESSING MARKERS that are spent only modify the Injury Roll for the Melee Attack they are spent on.",
             "subcontent":   [],
             "glossary": [
-                {"val": "BLOOD MARKER", "id": "gl_bloodmarker"}]
+                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
+                {"val": "BLESSING MARKERS", "id": "gl_blessingmarker"}
+            ]
         }]
     },
     {
@@ -161,9 +322,26 @@
         "name": "Consumable",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "An item with this keyword can only be used once per battle and it is then gone.",
+            "content": "In a campaign, Battlekit with this Keyword is lost at the end of a game in which it is used.",
             "subcontent":   [],
             "glossary": []
+        }]
+    },
+    {
+        "id": "gl_cover",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Cover",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A model with this Keyword has the Cover or Defended Obstacle attack modifiers. Cover applies -1 DICE to Ranged Attacks targeting the model. Defended Obstacle applies -1 INJURY MODIFIER to Melee Attacks targeting the model when the obstacle is between attacker and defender.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "-1 DICE", "id": "gl_minusdice"}
+            ]
         }]
     },
     {
@@ -177,9 +355,112 @@
         "name": "Critical",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "When attacking with a weapon with this keyword, add +2 DICE to any injury rolls the weapon causes if you roll a Critical (i.e. 12+) on the Action Success Chart.",
+            "content": "Add +2 INJURY DICE instead of +1 INJURY DICE when a Critical Success is rolled for an attack made by a Weapon with this Keyword.",
             "subcontent":   [],
-            "glossary": [{"val": "+1 DICE", "id": "gl_plusdice"}]
+            "glossary": [
+                {"val": "+2 INJURY DICE", "id": "gl_plusinjurydice"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_cumbersome",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Cumbersome",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Weapons with this Keyword require two hands to use, even if the model has the STRONG Keyword. However, they can still be used alongside a Shield with the Shield Combo stipulation.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "STRONG", "id": "gl_strong"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_dangerousterrain",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "general"}
+        ],
+        "name": "Dangerous Terrain",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "If you Activate a model that is in terrain with this Keyword, or if you move a model into terrain with this Keyword during a move, you must take a Risky Success Roll. On a Success or Critical Success, carry on with the move (no more rolls needed for this Keyword this move). On a Failure, make an Injury Roll for the model and its Activation ends. Sometimes DANGEROUS TERRAIN will have Keywords in brackets (e.g. DANGEROUS TERRAIN (FIRE)) \u2014 any Injury Rolls caused have those Keywords.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "RISKY", "id": "gl_riskyaction"},
+                {"val": "FIRE", "id": "gl_fire"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_deadly",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Deadly",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When you make an Injury Roll for an attack made with a weapon with this Keyword, roll 3D6 and add all 3 dice together. Any +INJURY DICE or -INJURY DICE are added to the roll normally, except that you pick the 3 highest or lowest dice in the roll instead of the 2 highest or lowest.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "+INJURY DICE", "id": "gl_plusinjurydice"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_demonic",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Demonic",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A model with this Keyword has the NEGATE FIRE Keyword.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "NEGATE", "id": "gl_negate"},
+                {"val": "FIRE", "id": "gl_fire"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_deployable",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Deployable",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Battlekit that is represented by a model or terrain piece that can be set up during the game.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_difficultterrain",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "general"}
+        ],
+        "name": "Difficult Terrain",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Every 1\" a model is moved across terrain with this Keyword counts as 2\".",
+            "subcontent":   [],
+            "glossary": []
         }]
     },
     {
@@ -192,7 +473,7 @@
         "name": "Elite",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "The most senior and heroic models of the warband. They have different rules for experience and advancement, and often enjoy a different weapon, armour and equipment selection.",
+            "content": "The most senior and heroic models in a Warband. They have different rules for experience and advancement in campaigns, and often enjoy a different weapon, armour and equipment selection.",
             "subcontent":   [],
             "glossary": []
         }]
@@ -207,11 +488,11 @@
         "name": "Fear",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Enemies of models with this Keyword suffer -1 DICE in Melee combat against this model. Some units are immune to this effect. Models that cause FEAR are not affected by FEAR themselves.",
+            "content": "Add -1 DICE to a Melee Attack that targets a model with this Keyword. Models that cause FEAR are immune to FEAR themselves.",
             "subcontent":   [],
             "glossary": [
-                    {"val": "-1 DICE", "id": "gl_minusdice"}
-                ]
+                {"val": "-1 DICE", "id": "gl_minusdice"}
+            ]
         }]
     },
     {
@@ -219,12 +500,13 @@
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "equipment"}
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
         ],
         "name": "Fire",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A model hit by a weapon will this Keyword suffers a BLOOD MARKER, in addition to any other effects of the attack. The model suffers this Blood Marker even if the attack has no other effects or is otherwise negated. Some equipment or abilities can negate the additional BLOOD MARKER caused by this Keyword.",
+            "content": "After making the Injury Roll for a Weapon with this Keyword, place 1 extra BLOOD MARKER next to the target model even if the result is No Effect.",
             "subcontent":   [],
             "glossary": [{"val": "BLOOD MARKER", "id": "gl_bloodmarker"}]
         }]
@@ -239,10 +521,45 @@
         "name": "Fireteam",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is part of a Fireteam consisting of two models. All models that are part of the same Fireteam can be activated at the same time without the opponent getting their turn in between. They can take their ACTIONS in any order they wish, switching between the two models. Note that if the Activation of either member of the Fireteam forcefully ends (due a failed RISKY ACTION for example), it ends both Activations. Allies cannot be part of a Fireteam.",
+            "content": "A model with this Keyword is part of a group of 2 models, both of which must have the FIRETEAM Keyword. You can Activate friendly models in the same Fireteam simultaneously, taking their ACTIONS in any order and switching between them freely. However, if the Activation of either member ends during a simultaneous Activation, it immediately ends for the other model too. A model cannot be in more than 1 Fireteam.",
             "subcontent":   [],
             "glossary": [
-                {"val": "RISKY ACTION", "id": "gl_riskyaction"},{"val": "ACTIONS", "id": "gl_action"}]
+                {"val": "ACTIONS", "id": "gl_action"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_flamethrower",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Flamethrower",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When a Weapon with this Keyword is used to make a Ranged Attack it is automatically a Success. Do not make a Success Roll for the attack. Note that this means that the attack cannot achieve a Critical Success.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_flying",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Flying",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When you make a move, retreat move or charge move with a model with this Keyword, you can measure the path on which it travels 'through the air'. It must end the move on the battlefield or on a terrain piece. You must still take a Risky Success Roll for DANGEROUS TERRAIN, and it cannot end its move on IMPASSABLE TERRAIN. Do not make an Injury Roll if a model with this Keyword Falls.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "DANGEROUS TERRAIN", "id": "gl_dangerousterrain"},
+                {"val": "IMPASSABLE TERRAIN", "id": "gl_impassableterrain"}
+            ]
         }]
     },
     {
@@ -250,14 +567,55 @@
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "equipment"}
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
         ],
         "name": "Gas",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A model hit by a weapon will this Keyword suffers a BLOOD MARKER, in addition to any other effects of the attack. The model suffers this Blood Marker even if the attack has no other effects or is otherwise negated. Some equipment or abilities can negate the additional BLOOD MARKER caused by this Keyword.",
+            "content": "After making the Injury Roll for a Weapon with this Keyword, place 1 extra BLOOD MARKER next to the target model even if the result is No Effect.",
             "subcontent":   [],
             "glossary": [{"val": "BLOOD MARKER", "id": "gl_bloodmarker"}]
+        }]
+    },
+    {
+        "id": "gl_goetic",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "general"}
+        ],
+        "name": "Goetic",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Goetic Powers and Spells are marked with the keyword GOETIC (X) where X indicates how many BLOOD MARKERS must be spent to trigger the effect. These BLOOD MARKERS can be taken from any model currently on the battlefield, friendly or enemy, but must come from models that do not have the DEMONIC or BLACK GRAIL Keywords. BLOOD MARKERS used this way are removed from the game. Each Goetic power can be used only once per Activation.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
+                {"val": "DEMONIC", "id": "gl_demonic"},
+                {"val": "BLACK GRAIL", "id": "gl_blackgrail"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_golem",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Golem",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A model with this Keyword treats an Out of Action result from the Injury Roll Table as a Down result unless the result was caused by a Bloodbath Roll. You cannot remove BLOOD MARKERS from a friendly model with this Keyword (the opposing player can use them normally). A model with this Keyword has the NEGATE FEAR and NEGATE GAS Keywords, but cannot have the TOUGH Keyword.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "NEGATE", "id": "gl_negate"},
+                {"val": "FEAR", "id": "gl_fear"},
+                {"val": "GAS", "id": "gl_gas"},
+                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
+                {"val": "TOUGH", "id": "gl_tough"}
+            ]
         }]
     },
     {
@@ -277,6 +635,21 @@
         }]
     },
     {
+        "id": "gl_headgear",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Headgear",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A model may only wear one piece of Headgear at a time.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
         "id": "gl_heavy",
         "type": "Glossary",
         "source": "core",
@@ -286,9 +659,28 @@
         "name": "Heavy",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "If carrying a weapon, armour or equipment with this Keyword, the model cannot move/dash and shoot during its Activation, and the model cannot roll D6 and add it to the Charge move. Only one such item can be carried by a single model.",
+            "content": "A model cannot be equipped with more than one piece of Battlekit with this Keyword and it does not receive a Charge Bonus when it makes a charge move. In addition, if a Ranged Weapon or Grenade has this Keyword, you cannot use the Weapon or Grenade to make a Ranged Attack and take a Move, Charge, Retreat, or Dash ACTION with the attacking model as part of the same Activation.",
             "subcontent":   [],
-            "glossary": []
+            "glossary": [
+                {"val": "STRONG", "id": "gl_strong"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_held",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Held",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A piece of Battlekit with this Keyword requires one hand to carry and cannot be put down. Because of this, a model that has this Keyword can only be equipped with or use either a 1-Handed Weapon or a Shield. It cannot be equipped with or use any 2-Handed Weapons, or both a Weapon and a Shield (even if the Shield has the Shield Combo rule). It may still carry Grenades.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "GRENADE", "id": "gl_grenade"}
+            ]
         }]
     },
     {
@@ -301,59 +693,94 @@
         "name": "Heretic",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the Heretic Legion faction.",
+            "content": "This model is a member of the Heretic Legions Faction.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_ignorearmour",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Ignore Armour",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Ignore -INJURY DICE and -INJURY MODIFIERS for a target's Armour Characteristic, and for any Armour or Shield pieces of Battlekit that it has, for attacks that have this Keyword.",
             "subcontent":   [],
             "glossary": [
+                {"val": "IMPERVIOUS", "id": "gl_impervious"}
             ]
         }]
     },
     {
-        "id": "gl_demonic",
+        "id": "gl_ignoremodifier",
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "faction"}
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
         ],
-        "name": "Demonic",
+        "name": "Ignore [Modifier]",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Due to their infernal origins, a model with this Keyword ignores any additional BLOOD MARKERS caused by the Keyword FIRE.",
+            "content": "Ignore the Success Roll or Injury Roll modifier that is specified. For example, the Success Roll for an attack made with a Ranged Weapon that had the IGNORE COVER Keyword would not be affected by the -1 DICE modifier for a target that is in Cover.",
             "subcontent":   [],
             "glossary": [
-                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
-                {"val": "FIRE", "id": "gl_fire"}
+                {"val": "COVER", "id": "gl_cover"}
             ]
         }]
     },
     {
-        "id": "gl_artificial",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "model"}
-        ],
-        "name": "Artificial",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-                            "content": "This model is not of natural origin but is instead constructed from non-organic elements.",
-                            "glossary": [{"val": "FEAR", "id": "gl_fear"},{"val": "GAS", "id": "gl_gas"},{"val": "-1 DICE", "id": "gl_minusdice"},{"val": "BLOOD MARKERS", "id": "gl_bloodmarker"}]
-        }]
-    },
-    {
-        "id": "gl_goetic",
+        "id": "gl_impassableterrain",
         "type": "Glossary",
         "source": "core",
         "tags": [
             {"tag_name": "category", "val": "general"}
         ],
-        "name": "Goetic",
+        "name": "Impassable Terrain",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Goetic Powers and Spells are marked with the keyword GOETIC (x) where the number in brackets indicates how many BLOOD MARKERS will have to be expanded to trigger the effect of the spell. These BLOOD MARKERS can be taken from any model currently taking part of the battle, be they friendly or enemy models, But they must come from models that do not have the Keyword DEMONIC or BLACK GRAIL. BLOOD MARKERs used this way are removed from the game, and the described effect of the Goetic Spell or ability then takes effect as described -no dice roll is needed. As with other Actions, each of these powers and spells can be used by the model only once per Activation, and they can be taken during any point of the Activation.",
+            "content": "Models cannot be moved onto or across terrain with this Keyword.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_impervious",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Impervious",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "The ARMOUR PIERCING and IGNORE ARMOUR Effects do not affect any -INJURY DICE and -INJURY MODIFIERS that apply to Battlekit that has this Keyword. Any other Battlekit the target model has is affected normally.",
             "subcontent":   [],
             "glossary": [
-                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"},
-                {"val": "DEMONIC", "id": "gl_demonic"}
+                {"val": "ARMOUR PIERCING", "id": "gl_armourpiercing"},
+                {"val": "IGNORE ARMOUR", "id": "gl_ignorearmour"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_infectionmarker",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "dice"}
+        ],
+        "name": "Infection Marker",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "The model is under the influence of a supernatural or chemical malady that provides temporary effects. Each can be spent as if it were a BLOOD MARKER. If a model has at least one Infection Marker when activated, it gains +1 Infection Marker.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLOOD MARKER", "id": "gl_bloodmarker"}
             ]
         }]
     },
@@ -367,57 +794,25 @@
         "name": "Infiltrator",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Models with this Keyword can be placed anywhere on the table out of line of sight of any enemies, but at least 8” away from the closest enemy. Deployed after all other models without this Keyword. If any infiltrators cannot be deployed according to these restrictions then those models can always be deployed in your deployment zone.",
+            "content": "When a model with this Keyword is deployed for the first time in a game, it can be set up anywhere on the battlefield as long as it is out of the Line of Sight of all enemies and is at least 8\" away from the closest enemy. INFILTRATORS are deployed after models that do not have this Keyword. Any INFILTRATORS that cannot be deployed in this way are instead deployed normally in their deployment zone.",
             "subcontent":   [],
-            "glossary": [
-                ]
+            "glossary": []
         }]
     },
     {
-        "id": "gl_newantioch",
+        "id": "gl_leader",
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "faction"}
+            {"tag_name": "category", "val": "model"}
         ],
-        "name": "New Antioch",
+        "name": "Leader",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the New Antioch faction.",
+            "content": "Add +1 DICE to Morale Checks if your Warband has at least 1 model with this Keyword on the battlefield that is not Down or Out of Action.",
             "subcontent":   [],
             "glossary": [
-            ]
-        }]
-    },
-    {
-        "id": "gl_thecourt",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "faction"}
-        ],
-        "name": "The Court",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the Court of the Seven Headed Serpent faction.",
-            "subcontent":   [],
-            "glossary": [
-            ]
-        }]
-    },
-    {
-        "id": "gl_pilgrim",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "faction"}
-        ],
-        "name": "Pilgrim",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the Pilgrim faction.",
-            "subcontent":   [],
-            "glossary": [
+                {"val": "+1 DICE", "id": "gl_plusdice"}
             ]
         }]
     },
@@ -431,9 +826,139 @@
         "name": "Limit (X)",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "You can only purchase as many of this piece of equipment/weapon/armour as indicated by the number in parenthesis for your Warband. If you find more via looting/exploration, you can break this limit.",
+            "content": "You can only purchase as many of this piece of Battlekit as indicated by the number in parenthesis for your Warband. If you find more via looting/exploration, you can break this limit.",
             "subcontent":   [],
             "glossary": []
+        }]
+    },
+    {
+        "id": "gl_mined",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Mined",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When a model moves into contact with a Marker or terrain piece with the MINED Keyword, the mine will detonate unless the model has the NEGATE MINED Keyword. Make an Injury Roll with the SHRAPNEL Keyword for the model that detonated the mine, and then the Marker or terrain piece loses the MINED Keyword. If the model that detonated the mine wasn't taken Down or Out of Action, it can then continue its move. Models with the FLYING Keyword only detonate a mine if they finish a move in contact with it.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "SHRAPNEL", "id": "gl_shrapnel"},
+                {"val": "NEGATE", "id": "gl_negate"},
+                {"val": "FLYING", "id": "gl_flying"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_negate",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "general"}
+        ],
+        "name": "Negate [Keyword]",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A model with the NEGATE Keyword is not affected by the specified Keyword's Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_newantioch",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "faction"}
+        ],
+        "name": "New Antioch",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "This model is part of the Principality of New Antioch Faction.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_pilgrim",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "faction"}
+        ],
+        "name": "Pilgrim",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "This model is part of the Trench Pilgrim Faction.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_pistol",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Pistol",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "A pistol can be used as a Melee Weapon or a Ranged Weapon, and can be used as both in the same Activation. When it is used as a Ranged Weapon it has the Range shown on its Profile and uses the attacking model's Ranged Characteristic. When used as a Melee Weapon it can use the attacking model's Ranged or Melee Characteristic and can be used as an Off-Hand Weapon if desired.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_regeneratex",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "model"}
+        ],
+        "name": "Regenerate (X)",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "When you Activate a model with this Keyword, before carrying out any ACTIONS, you can remove up to X BLOOD MARKERS from the model.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLOOD MARKERS", "id": "gl_bloodmarker"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_reload",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Reload",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "If a model makes an attack with a Weapon that has this Keyword then its Activation ends after the ACTION that allowed the attack is completed.",
+            "subcontent":   [],
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_risky",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"}
+        ],
+        "name": "Risky",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "If you must make a Success Roll for a model that is using a piece of Battlekit that has this Keyword, then the Success Roll becomes a Risky Success Roll (the model's Activation or ACTION will end if the Risky Success Roll is a Failure). This Effect is ignored if the Success Roll is already a Risky Success Roll.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "RISKY ACTION", "id": "gl_riskyaction"}
+            ]
         }]
     },
     {
@@ -446,10 +971,47 @@
         "name": "Risky Action",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "If you fail your roll on the Action Success Chart when taking this ACTION, the Activation of this model ends immediately.",
+            "content": "If you fail your Success Roll when taking this ACTION, the Activation of this model ends immediately.",
             "subcontent":   [],
             "glossary": [
                 {"val": "ACTION", "id": "gl_action"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_scatter",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Scatter",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Some Weapons with the BLAST Keyword also have the SCATTER Keyword. If the Success Roll for the attack was a Failure, the attack scatters instead of missing. Subtract the Success Roll from 7 to get the scatter distance in inches. Your opponent moves the attack that many inches in a direction of their choice (must have Line of Sight to the original target). Then determine hits as described in the BLAST rules.",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "BLAST", "id": "gl_blastx"}
+            ]
+        }]
+    },
+    {
+        "id": "gl_shotgun",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
+        ],
+        "name": "Shotgun",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "Add -1 INJURY DICE to rolls for attacks made at Long Range with a Weapon that has this Keyword instead of the usual Long Range modifier (-1 DICE).",
+            "subcontent":   [],
+            "glossary": [
+                {"val": "-1 INJURY DICE", "id": "gl_plusinjurydice"},
+                {"val": "-1 DICE", "id": "gl_minusdice"}
             ]
         }]
     },
@@ -458,28 +1020,15 @@
         "type": "Glossary",
         "source": "core",
         "tags": [
-            {"tag_name": "category", "val": "equipment"}
+            {"tag_name": "category", "val": "equipment"},
+            {"tag_name": "category", "val": "weapon"}
         ],
         "name": "Shrapnel",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A model hit by a weapon will this Keyword suffers a BLOOD MARKER, in addition to any other effects of the attack. The model suffers this Blood Marker even if the attack has no other effects or is otherwise negated. Some equipment or abilities can negate the additional BLOOD MARKER caused by this Keyword.",
+            "content": "After making the Injury Roll for a Weapon with this Keyword, place 1 extra BLOOD MARKER next to the target model even if the result is No Effect.",
             "subcontent":   [],
             "glossary": [{"val": "BLOOD MARKER", "id": "gl_bloodmarker"}]
-        }]
-    },
-    {
-        "id": "gl_headgear",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "equipment"}
-        ],
-        "name": "Headgear",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A model may only wear one piece of Headgear at a time.",
-            "subcontent":   []
         }]
     },
     {
@@ -492,7 +1041,7 @@
         "name": "Skirmisher",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "When a model with this Keyword is targeted by an enemy’s Charge, it may immediately move D3” in any direction, except into Melee Combat. A Skirmisher may also make this move when a charging enemy model would enter Melee Combat with it during a Charge that is not targeting it. After either of these moves is resolved, the Charge continues as normal toward the original target. These moves can only be taken if the Skirmisher is not in Melee Combat and only one such move may be taken per Charge.",
+            "content": "If an enemy selects a model with this Keyword as the target of a Charge, you can choose to evade with your model before the Charge is made, as long as your model is not within 1\" of an enemy. When a model evades, roll a D3 and move the model that many inches. It must finish this move more than 1\" away from all enemy models. If this move results in there being an interposing model between the evading model and the charger, the charging model must choose the interposing model as its charge target.",
             "subcontent":   [],
             "glossary": []
         }]
@@ -522,11 +1071,12 @@
         "name": "Strong",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A model with this Keyword ignores the rules for weapons/armour/equipment with Keyword HEAVY. In addition, it may use a single 2-handed Melee weapon as a 1-handed weapon.",
+            "content": "A model with this Keyword has the NEGATE HEAVY Keyword. In addition, it can equip and use one 2-Handed Melee Weapon as if it were a 1-Handed Melee Weapon.",
             "subcontent":   [],
             "glossary": [
-                    {"val": "HEAVY", "id": "gl_heavy"}
-                ]
+                {"val": "NEGATE", "id": "gl_negate"},
+                {"val": "HEAVY", "id": "gl_heavy"}
+            ]
         }]
     },
     {
@@ -539,10 +1089,24 @@
         "name": "Sultanate",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "This model is a part of the Sultanate faction.",
+            "content": "This model is part of the Sultanate of the Iron Wall Faction.",
             "subcontent":   [],
-            "glossary": [
-            ]
+            "glossary": []
+        }]
+    },
+    {
+        "id": "gl_thecourt",
+        "type": "Glossary",
+        "source": "core",
+        "tags": [
+            {"tag_name": "category", "val": "faction"}
+        ],
+        "name": "The Court",
+        "description":  [{
+            "tags": [{"tag_name": "desc_type", "val": "desc"}],
+            "content": "This model is part of The Court of the Seven-Headed Serpent Faction.",
+            "subcontent":   [],
+            "glossary": []
         }]
     },
     {
@@ -555,95 +1119,9 @@
         "name": "Tough",
         "description":  [{
             "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "If a TOUGH model would be taken Out Of Action, it is knocked Down instead. After a TOUGH model has been knocked Down in this way once, it can be taken Out of Action as normal.",
+            "content": "The first time a model with this Keyword suffers an Out of Action result on the Injury Table, it is treated as a Down result instead.",
             "subcontent":   [],
-            "glossary": [
-                ]
-        }]
-    },
-    {
-        "id": "gl_blastx",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "equipment"}
-        ],
-        "name": "Blast (X)",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "A weapon with BLAST (X) has an area of effect with a radius of inches indicated by the (X). If this weapon targets a model, this radius is measured from the centre of that model’s base in all directions. If this weapon targets a point on the ground, this radius is measured from that point in all directions, including vertically. If the Attack ACTION with this weapon is successful, it hits every model within this radius that the target (either model or point) has line of sight to (ie. not completely blocked by terrain).",
-            "subcontent":   [],
-            "glossary": [
-                ]
-        }]
-    },
-    {
-        "id": "gl_cumbersome",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "equipment"}
-        ],
-        "name": "Cumbersome",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Model always requires two hands to use this weapon, even if the model has Keyword STRONG.",
-            "subcontent":   [],
-            "glossary": [
-                {"val": "STRONG", "id": "gl_strong"}
-                ]
-        }]
-    },
-    {
-        "id": "gl_grenade",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "equipment"}
-        ],
-        "name": "Grenade",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "Grenade-type weapons ignore penalties for cover and long range. They do not count towards the number of Ranged weapons a model can carry and do not have to be held in your hand at all times. A model armed with grenades can use them as many times as they wish.",
-            "subcontent":   [],
-            "glossary": [
-                ]
-        }]
-    },
-    {
-        "id": "gl_golem",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "model"}
-        ],
-        "name": "Golem",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "As a GOLEM constructed by Kabbalistic knowledge, the model is exceedingly difficult to destroy. It treats Out of Action Injury results as Down unless the attack is done using the Bloodbath rule in which case Out of Action result removes the Scripture Guardian from the play as standard. It does not suffer additional Blood Markers from weapons with keyword GAS, and are not affected by the Keyword FEAR. The controlling player cannot remove BLOOD MARKERs from the Guardian by any means, though the opponent can use them as standard.",
-            "subcontent":   [],
-            "glossary": [
-                {"val": "GAS", "id": "gl_gas"},
-                {"val": "FEAR", "id": "gl_fear"},
-                {"val": "BLOOD MARKERs", "id": "gl_bloodmarker"}
-                ]
-        }]
-    },
-    {
-        "id": "gl_leader",
-        "type": "Glossary",
-        "source": "core",
-        "tags": [
-            {"tag_name": "category", "val": "model"}
-        ],
-        "name": "Leader",
-        "description":  [{
-            "tags": [{"tag_name": "desc_type", "val": "desc"}],
-            "content": "As long as this model is not taken Out of Action, add +1 DICE to any Morale tests the warband has to take.",
-            "subcontent":   [],
-            "glossary": [
-                {"val": "+1 DICE", "id": "gl_plusdice"}
-                ]
+            "glossary": []
         }]
     }
 ]

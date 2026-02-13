@@ -19,7 +19,7 @@ function CategoryIcon({ path }: { path: string }) {
 
 export function RulesHome() {
   const counts: Record<string, number> = useLiveQuery(async () => {
-    const rules = await db.rules.where('rulesetId').equals('official-1.0').toArray();
+    const rules = await db.rules.where('rulesetId').equals('official-1.0.2').toArray();
     const result: Record<string, number> = {};
     for (const rule of rules) {
       result[rule.category] = (result[rule.category] || 0) + 1;
