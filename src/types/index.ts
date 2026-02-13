@@ -32,7 +32,6 @@ export interface Rule {
   content: string;
   parentId?: string;
   order: number;
-  keywordIds: string[];
 }
 
 // --- Faction Equipment/Model Pricing ---

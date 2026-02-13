@@ -42,7 +42,6 @@ The game uses two six-sided dice (2D6) to resolve actions via Success Rolls. +DI
 
 A game is played over a series of TURNS. Each Turn has three phases: the **Initiative Phase**, the **Activation Phase**, and the **Morale Phase**. The player who achieves their SCENARIO objectives wins the game.`,
     order: 1,
-    keywordIds: [],
   },
   {
     id: 'core-activations',
@@ -61,7 +60,6 @@ When activated, a model may perform ACTIONS. Each type of ACTION can only be per
 
 Actions requiring a roll use the **Success Roll Table** (2D6 with +DICE/-DICE modifiers). **RISKY ACTIONS** end the model's Activation immediately if the Success Roll fails.`,
     order: 2,
-    keywordIds: [],
   },
   {
     id: 'core-movement',
@@ -77,7 +75,6 @@ A model within 1" of an enemy may **Retreat** to disengage, but the enemy gets t
 
 **Terrain** affects movement: DIFFICULT TERRAIN costs double movement (1" counts as 2"), DANGEROUS TERRAIN requires a Risky Success Roll (failure causes an Injury Roll), and IMPASSABLE TERRAIN cannot be crossed. Models can climb sheer surfaces (Risky Success Roll), jump gaps (up to half Movement), and jump down (free if under 3", otherwise Injury Roll for falling).`,
     order: 3,
-    keywordIds: [],
   },
   {
     id: 'core-shooting',
@@ -99,7 +96,6 @@ On a success, make an Injury Roll against the target. On a Critical Success (12+
 
 **HEAVY** weapons cannot be used in the same Activation as a Move, Charge, Retreat, or Dash action. **ASSAULT** weapons do not prevent the model from taking a Charge or Fight action in the same Activation.`,
     order: 4,
-    keywordIds: [],
   },
   {
     id: 'core-melee',
@@ -119,7 +115,6 @@ A model with multiple melee weapons can make one attack with each, but the secon
 
 **FEAR** causes -1 DICE to Melee Attacks targeting the model. Models that cause FEAR are immune to FEAR themselves.`,
     order: 5,
-    keywordIds: [],
   },
   {
     id: 'core-injuries',
@@ -139,7 +134,6 @@ A model with multiple melee weapons can make one attack with each, but the secon
 
 **Morale Phase**: When half or more of a warband's models are Down or Out of Action, a Morale Check is required. If a LEADER is on the battlefield (not Down or Out of Action), add +1 DICE. A failed Morale Check makes the warband **Shaken** (all Success Rolls become Risky). A second consecutive failure means the warband flees and loses.`,
     order: 6,
-    keywordIds: [],
   },
   {
     id: 'core-campaign',
@@ -159,7 +153,6 @@ After each game, you go through the **Campaign Phase**:
 
 Your warband also has a **Patron** who provides unique campaign skills. **Glory Points** earned from Glorious Deeds can purchase powerful **Glory Items**.`,
     order: 7,
-    keywordIds: [],
   },
   {
     id: 'core-equipment',
@@ -183,7 +176,6 @@ Your warband also has a **Patron** who provides unique campaign skills. **Glory 
 
 **Armour** provides -INJURY MODIFIERS to Injury Rolls. Only one piece of **HEADGEAR** can be worn. **Equipment costs vary by faction** — each has its own armoury with different prices and restrictions. Some items cost GLORY instead of DUCATS.`,
     order: 8,
-    keywordIds: [],
   },
 ];
 
