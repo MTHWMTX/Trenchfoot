@@ -14,7 +14,24 @@ export function WarbandCreate() {
   const [name, setName] = useState('');
   const [gameType, setGameType] = useState<GameType>('standard');
 
-  const variants = useWarbandVariants(selectedFaction?.id ?? '');
+  const namedVariants = useWarbandVariants(selectedFaction?.id ?? '');
+  const variants = selectedFaction
+    ? [
+        {
+          id: 'fv_basic',
+          factionId: selectedFaction.id,
+          name: `Default ${selectedFaction.name}`,
+          flavour: '',
+          rules: [],
+          removedRules: [],
+          removedEquipment: [],
+          removedModels: [],
+          addedEquipment: [],
+          addedModels: [],
+        },
+        ...namedVariants,
+      ]
+    : namedVariants;
 
   const faithfulFactions = factions.filter((f) => f.team === 'heaven');
   const hereticFactions = factions.filter((f) => f.team === 'hell');

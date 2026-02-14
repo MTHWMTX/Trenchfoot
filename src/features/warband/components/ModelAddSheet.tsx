@@ -68,7 +68,7 @@ export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountB
                         return <span className={colorClass}>{count}/{entry.limitMax}</span>;
                       })()}
                       <span className="text-text-muted">
-                        MV{t.stats.movement} MEL{formatDice(t.stats.melee)} ARM{t.stats.armour}
+                        MV{t.stats.movement} RNG{formatDice(t.stats.ranged)} MEL{formatDice(t.stats.melee)} ARM{t.stats.armour}
                       </span>
                     </div>
                   </div>
