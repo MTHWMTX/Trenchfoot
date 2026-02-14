@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
+import { useAddons } from '../hooks';
 import type { WarbandModel, Faction } from '../../../types';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 
@@ -24,6 +25,7 @@ export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
     () => Promise.all(model.equipmentIds.map((id) => db.equipmentTemplates.get(id))),
     [model.equipmentIds]
   );
+  const addons = useAddons(template?.addonIds ?? []);
 
   if (!template) return null;
 
@@ -105,6 +107,17 @@ export function ModelCard({ model, faction, onTap, onDelete }: ModelCardProps) {
           {equipment.map((eq, i) => eq && (
             <span key={i} className="text-[10px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded">
               {eq.name}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Addons */}
+      {addons.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {addons.map((addon) => (
+            <span key={addon.id} className="text-[10px] text-accent-blue/70 bg-accent-blue/8 px-1.5 py-0.5 rounded">
+              {addon.name}
             </span>
           ))}
         </div>

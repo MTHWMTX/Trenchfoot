@@ -8,6 +8,8 @@ interface ModelAddSheetProps {
   warbandId: string;
   factionId: string;
   modelCountByTemplate?: Record<string, number>;
+  modelCount: number;
+  modelLimit: number;
 }
 
 function formatDice(val: number | null): string {
@@ -16,11 +18,16 @@ function formatDice(val: number | null): string {
   return `${val}`;
 }
 
-export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountByTemplate = {} }: ModelAddSheetProps) {
+export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountByTemplate = {}, modelCount, modelLimit }: ModelAddSheetProps) {
   const templates = useModelTemplates(factionId);
   const faction = useFaction(factionId);
 
+  const atWarbandCap = modelCount >= modelLimit;
+
   const handleAdd = async (templateId: string) => {
+    if (atWarbandCap) return;
+    const entry = modelEntryMap.get(templateId);
+    if (entry && entry.limitMax > 0 && (modelCountByTemplate[templateId] ?? 0) >= entry.limitMax) return;
     await addModelToWarband(warbandId, templateId);
     onClose();
   };
@@ -37,15 +44,26 @@ export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountB
           <Dialog.Title className="text-lg font-bold mb-1">Add Model</Dialog.Title>
           <Dialog.Description className="text-text-muted text-xs mb-4">Choose a model to add to your warband</Dialog.Description>
 
+          {atWarbandCap && (
+            <div className="mb-3 px-3 py-2 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red-bright text-[11px] text-center">
+              Warband model limit reached ({modelLimit})
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             {templates.map((t) => {
               const entry = modelEntryMap.get(t.id);
+              const count = modelCountByTemplate[t.id] ?? 0;
+              const atTemplateLimit = entry != null && entry.limitMax > 0 && count >= entry.limitMax;
+              const disabled = atWarbandCap || atTemplateLimit;
               return (
                 <button
                   key={t.id}
                   type="button"
-                  onClick={() => handleAdd(t.id)}
-                  className="w-full text-left p-3 bg-bg-tertiary border border-border-default rounded-xl hover:border-accent-gold/20 transition-all cursor-pointer flex items-center gap-3"
+                  onClick={() => !disabled && handleAdd(t.id)}
+                  className={`w-full text-left p-3 bg-bg-tertiary border border-border-default rounded-xl transition-all flex items-center gap-3 ${
+                    disabled ? 'opacity-40 cursor-not-allowed' : 'hover:border-accent-gold/20 cursor-pointer'
+                  }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -63,9 +81,12 @@ export function ModelAddSheet({ open, onClose, warbandId, factionId, modelCountB
                         </span>
                       )}
                       {entry && entry.limitMax > 0 && (() => {
-                        const count = modelCountByTemplate[t.id] ?? 0;
                         const colorClass = count > entry.limitMax ? 'text-accent-red-bright' : count >= entry.limitMax ? 'text-accent-gold' : 'text-text-muted';
-                        return <span className={colorClass}>{count}/{entry.limitMax}</span>;
+                        return (
+                          <span className={colorClass}>
+                            {count}/{entry.limitMax}{atTemplateLimit ? ' (max)' : ''}
+                          </span>
+                        );
                       })()}
                       <span className="text-text-muted">
                         MV{t.stats.movement} RNG{formatDice(t.stats.ranged)} MEL{formatDice(t.stats.melee)} ARM{t.stats.armour}

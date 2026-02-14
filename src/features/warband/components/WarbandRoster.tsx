@@ -9,6 +9,7 @@ import { FactionBadge } from './FactionBadge';
 import { ModelCard } from './ModelCard';
 import { ModelAddSheet } from './ModelAddSheet';
 import { ModelEditSheet } from './ModelEditSheet';
+import { WarbandEditSheet } from './WarbandEditSheet';
 
 export function WarbandRoster() {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ export function WarbandRoster() {
   const faction = useFaction(warband?.factionId ?? '');
   const [addingModel, setAddingModel] = useState(false);
   const [editingModelId, setEditingModelId] = useState<string | null>(null);
+  const [editingWarband, setEditingWarband] = useState(false);
 
   const editingModel = useLiveQuery(
     () => (editingModelId ? db.warbandModels.get(editingModelId) : undefined),
@@ -59,7 +61,19 @@ export function WarbandRoster() {
       {/* Header */}
       <div className="mb-4">
         {faction && <FactionBadge name={faction.name} team={faction.team} />}
-        <h1 className="text-xl font-bold mt-2">{warband.name}</h1>
+        <div className="flex items-center gap-2 mt-2">
+          <h1 className="text-xl font-bold">{warband.name}</h1>
+          <button
+            type="button"
+            onClick={() => setEditingWarband(true)}
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-bg-tertiary text-text-muted hover:text-accent-gold hover:bg-accent-gold/10 transition-colors border-none cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
+          </button>
+        </div>
+        {warband.notes && (
+          <p className="text-text-muted text-xs mt-1.5 whitespace-pre-line">{warband.notes}</p>
+        )}
       </div>
 
       {/* Summary bar */}
@@ -105,6 +119,8 @@ export function WarbandRoster() {
         warbandId={warband.id}
         factionId={warband.factionId}
         modelCountByTemplate={cost.modelCountByTemplate}
+        modelCount={cost.modelCount}
+        modelLimit={warband.modelLimit}
       />
 
       {/* Edit model sheet */}
@@ -112,6 +128,13 @@ export function WarbandRoster() {
         model={editingModel ?? null}
         faction={faction}
         onClose={() => setEditingModelId(null)}
+      />
+
+      {/* Edit warband sheet */}
+      <WarbandEditSheet
+        warband={warband}
+        open={editingWarband}
+        onClose={() => setEditingWarband(false)}
       />
     </div>
   );

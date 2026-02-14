@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { updateWarbandModel } from '../actions';
+import { useAddons } from '../hooks';
 import { KeywordText } from '../../../components/keyword/KeywordText';
 import type { WarbandModel, Faction, EquipmentCategory } from '../../../types';
 
@@ -41,6 +42,8 @@ export function ModelEditSheet({ model, faction, onClose }: ModelEditSheetProps)
       : [],
     [factionEquipIds.join(',')]
   ) ?? [];
+
+  const addons = useAddons(template?.addonIds ?? []);
 
   const [customName, setCustomName] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
@@ -150,6 +153,25 @@ export function ModelEditSheet({ model, faction, onClose }: ModelEditSheetProps)
             <div className="mb-4 p-3 bg-bg-tertiary rounded-lg">
               <div className="text-[11px] text-text-secondary leading-relaxed whitespace-pre-line">
                 <KeywordText text={template.blurb} />
+              </div>
+            </div>
+          )}
+
+          {/* Special Abilities (addons) */}
+          {addons.length > 0 && (
+            <div className="mb-4">
+              <span className="text-[11px] text-text-muted uppercase tracking-wider block mb-2">Special Abilities</span>
+              <div className="flex flex-col gap-1">
+                {addons.map((addon) => (
+                  <div key={addon.id} className="p-2.5 bg-bg-tertiary border border-border-default rounded-lg">
+                    <span className="text-[12px] font-medium text-accent-blue/80">{addon.name}</span>
+                    {addon.description && (
+                      <div className="text-[10px] text-text-muted mt-0.5 leading-relaxed">
+                        <KeywordText text={addon.description} />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
