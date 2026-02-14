@@ -107,6 +107,7 @@ export interface ModelTemplate {
   stats: ModelStats;
   addonIds: string[];
   blurb: string;
+  promotion: number; // 0 = none, 1 = 1 die, 2 = 2 dice
 }
 
 export interface EquipmentTemplate {
@@ -154,4 +155,91 @@ export interface WarbandModel {
   equipmentIds: string[];
   notes: string;
   order: number;
+  campaignStatus?: 'active' | 'dead' | 'recovering';
+  scars?: { id: string; name: string; effect: string; gameNumber: number }[];
+  advancements?: { id: string; name: string; description: string; table: string; gameNumber: number }[];
+  promotionDiceEarned?: number;
+  promotionDiceSpent?: number;
+}
+
+// --- Campaign ---
+
+export interface CampaignGame {
+  gameNumber: number;
+  result: 'win' | 'loss' | 'draw';
+  opponentName: string;
+  scenarioName: string;
+  notes: string;
+  postGameCompleted: boolean;
+  completedAt?: Date;
+}
+
+export interface Campaign {
+  id: string;
+  warbandId: string;
+  patron: string;
+  currentGame: number;       // next game to play (1-12)
+  thresholdValue: number;    // starts 700, grows
+  fieldStrength: number;     // starts 10, grows to 22
+  gloryPoints: number;
+  ducatStash: number;
+  games: CampaignGame[];     // completed games
+  notes: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// --- Dice Tables (for campaign post-game) ---
+
+export interface TraumaTableEntry {
+  id: string;
+  rollMin: number;
+  rollMax: number;
+  name: string;
+  effect: string;
+  outcome: 'dead' | 'recovered' | 'scar';
+  isScar: boolean;
+}
+
+export interface TraumaTable {
+  id: string;
+  name: string;
+  diceType: 'd66' | 'd6';
+  modelType: 'elite' | 'non-elite';
+  entries: TraumaTableEntry[];
+}
+
+export interface SkillTableEntry {
+  id: string;
+  rollMin: number;
+  rollMax: number;
+  name: string;
+  description: string;
+}
+
+export interface SkillTable {
+  id: string;
+  name: string;
+  entries: SkillTableEntry[];
+}
+
+export interface ExplorationTableEntry {
+  id: string;
+  rollMin: number;
+  rollMax: number;
+  name: string;
+  description: string;
+  reward: {
+    type: 'ducats' | 'equipment' | 'glory' | 'special';
+    value?: number;
+    equipmentId?: string;
+    specialText?: string;
+  };
+}
+
+export interface ExplorationTable {
+  id: string;
+  name: string;
+  tier: 'common' | 'rare' | 'legendary';
+  entries: ExplorationTableEntry[];
 }

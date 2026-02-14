@@ -1,0 +1,35 @@
+[
+  {
+    "id": "trauma_elite",
+    "name": "Elite Trauma Table",
+    "dice_type": "d66",
+    "model_type": "elite",
+    "entries": [
+      { "id": "te_11", "roll_min": 11, "roll_max": 11, "name": "Dead", "effect": "The model is killed outright.", "outcome": "dead", "is_scar": false },
+      { "id": "te_12", "roll_min": 12, "roll_max": 12, "name": "Crippling Wound", "effect": "The model survives but suffers a permanent injury. -1 Movement.", "outcome": "scar", "is_scar": true },
+      { "id": "te_13", "roll_min": 13, "roll_max": 13, "name": "Lost Eye", "effect": "The model loses an eye. -1 DICE to Ranged Attacks.", "outcome": "scar", "is_scar": true },
+      { "id": "te_14", "roll_min": 14, "roll_max": 14, "name": "Shell Shock", "effect": "The model is shell-shocked. Must pass a Risky roll to activate next game.", "outcome": "scar", "is_scar": true },
+      { "id": "te_15", "roll_min": 15, "roll_max": 15, "name": "Mangled Hand", "effect": "The model's hand is mangled. -1 DICE to Melee Attacks.", "outcome": "scar", "is_scar": true },
+      { "id": "te_16", "roll_min": 16, "roll_max": 16, "name": "Deep Wound", "effect": "The model starts next game with 1 Blood Marker.", "outcome": "scar", "is_scar": true },
+      { "id": "te_21", "roll_min": 21, "roll_max": 21, "name": "Captured", "effect": "The model is captured. Roll again next game - on dead result, model is lost.", "outcome": "scar", "is_scar": true },
+      { "id": "te_22", "roll_min": 22, "roll_max": 22, "name": "Horrible Scars", "effect": "The model gains FEAR.", "outcome": "scar", "is_scar": true },
+      { "id": "te_23", "roll_min": 23, "roll_max": 23, "name": "Bitter Enmity", "effect": "The model hates the opponent's faction. +1 DICE vs that faction.", "outcome": "scar", "is_scar": true },
+      { "id": "te_24", "roll_min": 24, "roll_max": 24, "name": "Hardened", "effect": "The model is hardened by experience. +1 Armour permanently.", "outcome": "scar", "is_scar": true },
+      { "id": "te_25", "roll_min": 25, "roll_max": 26, "name": "Recovering", "effect": "The model must miss the next game while recovering.", "outcome": "recovered", "is_scar": false },
+      { "id": "te_31", "roll_min": 31, "roll_max": 36, "name": "Full Recovery", "effect": "The model makes a full recovery.", "outcome": "recovered", "is_scar": false },
+      { "id": "te_41", "roll_min": 41, "roll_max": 46, "name": "Full Recovery", "effect": "The model makes a full recovery.", "outcome": "recovered", "is_scar": false },
+      { "id": "te_51", "roll_min": 51, "roll_max": 56, "name": "Full Recovery", "effect": "The model makes a full recovery.", "outcome": "recovered", "is_scar": false },
+      { "id": "te_61", "roll_min": 61, "roll_max": 66, "name": "Full Recovery", "effect": "The model makes a full recovery and gains valuable experience.", "outcome": "recovered", "is_scar": false }
+    ]
+  },
+  {
+    "id": "trauma_non_elite",
+    "name": "Non-Elite Trauma Table",
+    "dice_type": "d6",
+    "model_type": "non-elite",
+    "entries": [
+      { "id": "tne_1", "roll_min": 1, "roll_max": 2, "name": "Dead", "effect": "The model is killed.", "outcome": "dead", "is_scar": false },
+      { "id": "tne_3", "roll_min": 3, "roll_max": 6, "name": "Survived", "effect": "The model survives and is ready for the next battle.", "outcome": "recovered", "is_scar": false }
+    ]
+  }
+]

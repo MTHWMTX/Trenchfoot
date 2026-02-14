@@ -7,6 +7,9 @@
 import type {
   Faction, WarbandVariant, ModelTemplate, EquipmentTemplate,
   Addon, Keyword, FactionRule,
+  TraumaTable, TraumaTableEntry,
+  SkillTable,
+  ExplorationTable, ExplorationTableEntry,
 } from '../types';
 
 // --- Raw Compendium Types ---
@@ -64,6 +67,7 @@ interface RawModel {
   blurb: RawDescription[];
   abilities: RawDescription[];
   equipment: RawDescription[];
+  promotion?: number;
 }
 
 interface RawEquipment {
@@ -228,6 +232,7 @@ export function transformModels(raw: RawModel[]): ModelTemplate[] {
       },
       addonIds,
       blurb: flattenDescription(m.blurb),
+      promotion: (m as any).promotion ?? 0,
     };
   });
 }
@@ -298,5 +303,91 @@ export function transformGlossary(raw: RawGlossary[]): Keyword[] {
     aliases: [g.name.toLowerCase()],
     category: g.tags?.find(t => t.tag_name === 'category')?.val || 'general',
     definition: flattenDescription(g.description),
+  }));
+}
+
+// --- Dice Table Transforms ---
+
+interface RawTraumaEntry {
+  id: string; roll_min: number; roll_max: number;
+  name: string; effect: string;
+  outcome: string; is_scar: boolean;
+}
+interface RawTraumaTable {
+  id: string; name: string; dice_type: string; model_type: string;
+  entries: RawTraumaEntry[];
+}
+
+export function transformTraumaTables(raw: RawTraumaTable[]): TraumaTable[] {
+  return raw.map(t => ({
+    id: t.id,
+    name: t.name,
+    diceType: t.dice_type as TraumaTable['diceType'],
+    modelType: t.model_type as TraumaTable['modelType'],
+    entries: (t.entries || []).map(e => ({
+      id: e.id,
+      rollMin: e.roll_min,
+      rollMax: e.roll_max,
+      name: e.name,
+      effect: e.effect,
+      outcome: e.outcome as TraumaTableEntry['outcome'],
+      isScar: e.is_scar,
+    })),
+  }));
+}
+
+interface RawSkillEntry {
+  id: string; roll_min: number; roll_max: number;
+  name: string; description: string;
+}
+interface RawSkillTable {
+  id: string; name: string; entries: RawSkillEntry[];
+}
+
+export function transformSkillTables(raw: RawSkillTable[]): SkillTable[] {
+  return raw.map(t => ({
+    id: t.id,
+    name: t.name,
+    entries: (t.entries || []).map(e => ({
+      id: e.id,
+      rollMin: e.roll_min,
+      rollMax: e.roll_max,
+      name: e.name,
+      description: e.description,
+    })),
+  }));
+}
+
+interface RawExplorationReward {
+  type: string; value?: number;
+  equipment_id?: string; special_text?: string;
+}
+interface RawExplorationEntry {
+  id: string; roll_min: number; roll_max: number;
+  name: string; description: string; reward: RawExplorationReward;
+}
+interface RawExplorationTable {
+  id: string; name: string; tier: string;
+  entries: RawExplorationEntry[];
+}
+
+export function transformExplorationTables(raw: RawExplorationTable[]): ExplorationTable[] {
+  return raw.map(t => ({
+    id: t.id,
+    name: t.name,
+    tier: t.tier as ExplorationTable['tier'],
+    entries: (t.entries || []).map(e => ({
+      id: e.id,
+      rollMin: e.roll_min,
+      rollMax: e.roll_max,
+      name: e.name,
+      description: e.description,
+      reward: {
+        type: e.reward.type as ExplorationTableEntry['reward']['type'],
+        value: e.reward.value,
+        equipmentId: e.reward.equipment_id,
+        specialText: e.reward.special_text,
+      },
+    })),
   }));
 }

@@ -3,6 +3,7 @@ import type {
   Ruleset, Rule, Keyword,
   Faction, WarbandVariant, ModelTemplate, EquipmentTemplate,
   Addon, Warband, WarbandModel,
+  Campaign, TraumaTable, SkillTable, ExplorationTable,
 } from '../types';
 
 export class TrenchCrusadeDB extends Dexie {
@@ -16,6 +17,10 @@ export class TrenchCrusadeDB extends Dexie {
   addons!: Table<Addon>;
   warbands!: Table<Warband>;
   warbandModels!: Table<WarbandModel>;
+  campaigns!: Table<Campaign>;
+  traumaTables!: Table<TraumaTable>;
+  skillTables!: Table<SkillTable>;
+  explorationTables!: Table<ExplorationTable>;
 
   constructor() {
     super('TrenchCrusadeDB');
@@ -73,6 +78,17 @@ export class TrenchCrusadeDB extends Dexie {
       for (const name of tables) {
         await tx.table(name).clear();
       }
+    });
+
+    // v9: Campaign management + dice tables
+    this.version(9).stores({
+      campaigns: 'id, warbandId',
+      traumaTables: 'id, modelType',
+      skillTables: 'id',
+      explorationTables: 'id, tier',
+    }).upgrade(async (tx) => {
+      // Re-seed modelTemplates to pick up `promotion` field
+      await tx.table('modelTemplates').clear();
     });
   }
 }

@@ -7,6 +7,9 @@ import {
   transformVariants,
   transformAddons,
   transformGlossary,
+  transformTraumaTables,
+  transformSkillTables,
+  transformExplorationTables,
 } from './transform';
 
 // Import Compendium JSON data
@@ -16,6 +19,9 @@ import rawEquipment from './compendium/equipment.json';
 import rawVariants from './compendium/variants.json';
 import rawAddons from './compendium/addons.json';
 import rawGlossary from './compendium/glossary.json';
+import rawTraumaTables from './compendium/trauma-tables.json';
+import rawSkillTables from './compendium/skill-tables.json';
+import rawExplorationTables from './compendium/exploration-tables.json';
 
 const OFFICIAL_RULESET_ID = 'official-1.0.2';
 
@@ -211,5 +217,16 @@ export async function seedDatabase() {
   await db.transaction('rw', db.equipmentTemplates, db.addons, async () => {
     await db.equipmentTemplates.bulkPut(equipment);
     await db.addons.bulkPut(addons);
+  });
+
+  // Seed dice tables for campaign
+  const traumaTables = transformTraumaTables(rawTraumaTables as any[]);
+  const skillTables = transformSkillTables(rawSkillTables as any[]);
+  const explorationTables = transformExplorationTables(rawExplorationTables as any[]);
+
+  await db.transaction('rw', db.traumaTables, db.skillTables, db.explorationTables, async () => {
+    await db.traumaTables.bulkPut(traumaTables);
+    await db.skillTables.bulkPut(skillTables);
+    await db.explorationTables.bulkPut(explorationTables);
   });
 }

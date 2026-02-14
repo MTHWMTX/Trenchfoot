@@ -1,0 +1,50 @@
+[
+  {
+    "id": "skill_melee_strength",
+    "name": "Melee & Strength",
+    "entries": [
+      { "id": "sms_1", "roll_min": 1, "roll_max": 1, "name": "Mighty Blow", "description": "+1 INJURY DICE to melee attacks." },
+      { "id": "sms_2", "roll_min": 2, "roll_max": 2, "name": "Iron Will", "description": "+1 DICE to Morale checks." },
+      { "id": "sms_3", "roll_min": 3, "roll_max": 3, "name": "Weapon Master", "description": "No off-hand penalty when fighting with two weapons." },
+      { "id": "sms_4", "roll_min": 4, "roll_max": 4, "name": "Resilient", "description": "-1 INJURY MODIFIER to all Injury Rolls against this model." },
+      { "id": "sms_5", "roll_min": 5, "roll_max": 5, "name": "Brutal Charge", "description": "+1 DICE to melee attacks when charging." },
+      { "id": "sms_6", "roll_min": 6, "roll_max": 6, "name": "Strong", "description": "Gains the STRONG keyword. Can use 2H melee weapons in one hand." }
+    ]
+  },
+  {
+    "id": "skill_ranged",
+    "name": "Ranged",
+    "entries": [
+      { "id": "sr_1", "roll_min": 1, "roll_max": 1, "name": "Sharpshooter", "description": "No Long Range penalty." },
+      { "id": "sr_2", "roll_min": 2, "roll_max": 2, "name": "Quick Shot", "description": "May shoot twice per activation (second shot at -1 DICE)." },
+      { "id": "sr_3", "roll_min": 3, "roll_max": 3, "name": "Eagle Eye", "description": "+1 DICE to ranged attacks when Elevated." },
+      { "id": "sr_4", "roll_min": 4, "roll_max": 4, "name": "Steady Hands", "description": "HEAVY weapons no longer prevent movement." },
+      { "id": "sr_5", "roll_min": 5, "roll_max": 5, "name": "Suppressive Fire", "description": "Target of ranged attack suffers -1 DICE to next activation even on miss." },
+      { "id": "sr_6", "roll_min": 6, "roll_max": 6, "name": "Deadeye", "description": "+1 INJURY DICE to ranged attacks." }
+    ]
+  },
+  {
+    "id": "skill_stealth_speed",
+    "name": "Stealth & Speed",
+    "entries": [
+      { "id": "sss_1", "roll_min": 1, "roll_max": 1, "name": "Sprint", "description": "+2 Movement." },
+      { "id": "sss_2", "roll_min": 2, "roll_max": 2, "name": "Infiltrator", "description": "May deploy anywhere more than 8\" from enemy models." },
+      { "id": "sss_3", "roll_min": 3, "roll_max": 3, "name": "Dodge", "description": "-1 DICE to enemy ranged attacks targeting this model." },
+      { "id": "sss_4", "roll_min": 4, "roll_max": 4, "name": "Acrobat", "description": "Climbing and jumping rolls automatically succeed." },
+      { "id": "sss_5", "roll_min": 5, "roll_max": 5, "name": "Scout", "description": "May make a free Move action before the first turn." },
+      { "id": "sss_6", "roll_min": 6, "roll_max": 6, "name": "Elusive", "description": "Enemies do not get free attacks when this model retreats." }
+    ]
+  },
+  {
+    "id": "skill_wildcard",
+    "name": "Wildcard",
+    "entries": [
+      { "id": "sw_1", "roll_min": 1, "roll_max": 1, "name": "Lucky", "description": "Once per game, may re-roll any single dice roll." },
+      { "id": "sw_2", "roll_min": 2, "roll_max": 2, "name": "Tough", "description": "Gains the TOUGH keyword. First OOA result becomes Down instead." },
+      { "id": "sw_3", "roll_min": 3, "roll_max": 3, "name": "Commander", "description": "Friendly models within 6\" gain +1 DICE to Morale checks." },
+      { "id": "sw_4", "roll_min": 4, "roll_max": 4, "name": "Scavenger", "description": "After each game, gain D6 x 10 additional ducats." },
+      { "id": "sw_5", "roll_min": 5, "roll_max": 5, "name": "Fearsome", "description": "Gains the FEAR keyword." },
+      { "id": "sw_6", "roll_min": 6, "roll_max": 6, "name": "Chosen", "description": "Gain +1 Blessing Marker at the start of each game." }
+    ]
+  }
+]

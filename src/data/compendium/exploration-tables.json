@@ -1,0 +1,41 @@
+[
+  {
+    "id": "explore_common",
+    "name": "Common Locations",
+    "tier": "common",
+    "entries": [
+      { "id": "ec_1", "roll_min": 1, "roll_max": 1, "name": "Abandoned Supplies", "description": "You find a cache of supplies.", "reward": { "type": "ducats", "value": 30 } },
+      { "id": "ec_2", "roll_min": 2, "roll_max": 2, "name": "Scrap Pile", "description": "Salvageable materials are recovered.", "reward": { "type": "ducats", "value": 20 } },
+      { "id": "ec_3", "roll_min": 3, "roll_max": 3, "name": "Hidden Stash", "description": "A small hidden cache of coins.", "reward": { "type": "ducats", "value": 40 } },
+      { "id": "ec_4", "roll_min": 4, "roll_max": 4, "name": "Wounded Survivor", "description": "A survivor offers information in exchange for aid.", "reward": { "type": "glory", "value": 1 } },
+      { "id": "ec_5", "roll_min": 5, "roll_max": 5, "name": "Empty Trench", "description": "Nothing of value is found.", "reward": { "type": "ducats", "value": 0 } },
+      { "id": "ec_6", "roll_min": 6, "roll_max": 6, "name": "Field Hospital", "description": "Medical supplies are recovered.", "reward": { "type": "ducats", "value": 50 } }
+    ]
+  },
+  {
+    "id": "explore_rare",
+    "name": "Rare Locations",
+    "tier": "rare",
+    "entries": [
+      { "id": "er_1", "roll_min": 1, "roll_max": 1, "name": "Officer's Quarters", "description": "Fine equipment and maps are discovered.", "reward": { "type": "ducats", "value": 75 } },
+      { "id": "er_2", "roll_min": 2, "roll_max": 2, "name": "Arms Cache", "description": "A hidden weapons cache.", "reward": { "type": "ducats", "value": 100 } },
+      { "id": "er_3", "roll_min": 3, "roll_max": 3, "name": "Holy Shrine", "description": "A small shrine radiates divine power.", "reward": { "type": "glory", "value": 2 } },
+      { "id": "er_4", "roll_min": 4, "roll_max": 4, "name": "Supply Depot", "description": "A well-stocked supply depot.", "reward": { "type": "ducats", "value": 80 } },
+      { "id": "er_5", "roll_min": 5, "roll_max": 5, "name": "Ancient Relic", "description": "A mysterious relic of unknown origin.", "reward": { "type": "special", "special_text": "Gain a random equipment item worth up to 50 ducats." } },
+      { "id": "er_6", "roll_min": 6, "roll_max": 6, "name": "War Trophy", "description": "A magnificent war trophy that inspires the warband.", "reward": { "type": "glory", "value": 3 } }
+    ]
+  },
+  {
+    "id": "explore_legendary",
+    "name": "Legendary Locations",
+    "tier": "legendary",
+    "entries": [
+      { "id": "el_1", "roll_min": 1, "roll_max": 1, "name": "Cathedral Ruins", "description": "The ruins of a great cathedral hold treasures.", "reward": { "type": "ducats", "value": 150 } },
+      { "id": "el_2", "roll_min": 2, "roll_max": 2, "name": "Infernal Gate", "description": "A gate between worlds seeps dark power.", "reward": { "type": "special", "special_text": "One model may gain a demonic mutation (counts as advancement)." } },
+      { "id": "el_3", "roll_min": 3, "roll_max": 3, "name": "Blessed Ground", "description": "Hallowed ground empowers the faithful.", "reward": { "type": "glory", "value": 5 } },
+      { "id": "el_4", "roll_min": 4, "roll_max": 4, "name": "Noble's Vault", "description": "A forgotten noble's treasure vault.", "reward": { "type": "ducats", "value": 200 } },
+      { "id": "el_5", "roll_min": 5, "roll_max": 5, "name": "Sacred Armory", "description": "An armory filled with blessed weapons.", "reward": { "type": "special", "special_text": "Gain a Glory equipment item for free." } },
+      { "id": "el_6", "roll_min": 6, "roll_max": 6, "name": "Divine Revelation", "description": "A vision from beyond grants wisdom and purpose.", "reward": { "type": "glory", "value": 4 } }
+    ]
+  }
+]
