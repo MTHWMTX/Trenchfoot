@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { useCampaign } from '../hooks';
@@ -33,6 +33,7 @@ export function CampaignDetail() {
     [warband?.id]
   ) ?? [];
 
+  const navigate = useNavigate();
   const [recordingGame, setRecordingGame] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
@@ -104,20 +105,48 @@ export function CampaignDetail() {
         />
       </div>
 
+      {/* Post-game pending banner */}
+      {(() => {
+        const lastGame = campaign.games.length > 0 ? campaign.games[campaign.games.length - 1] : null;
+        if (lastGame && !lastGame.postGameCompleted) {
+          return (
+            <button
+              type="button"
+              onClick={() => navigate(`/campaign/${campaign.id}/postgame`)}
+              className="w-full mb-4 p-3 bg-accent-gold/10 border border-accent-gold/25 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-accent-gold/15 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-lg bg-accent-gold/20 flex items-center justify-center shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-gold"><path d="M12 8v4l3 3" /><circle cx="12" cy="12" r="10" /></svg>
+              </div>
+              <div className="flex-1 text-left">
+                <div className="text-[13px] font-semibold text-accent-gold">Post-game phase pending</div>
+                <div className="text-[11px] text-text-muted">Game {lastGame.gameNumber} — Complete the post-game phase</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-gold/60 shrink-0"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          );
+        }
+        return null;
+      })()}
+
       {/* Game history */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-text-secondary">Game History</h2>
-          {!campaignComplete && (
-            <button
-              type="button"
-              onClick={() => setRecordingGame(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14m-7-7h14" /></svg>
-              Record Game
-            </button>
-          )}
+          {!campaignComplete && (() => {
+            const lastGame = campaign.games.length > 0 ? campaign.games[campaign.games.length - 1] : null;
+            const canRecordGame = !lastGame || lastGame.postGameCompleted;
+            return canRecordGame ? (
+              <button
+                type="button"
+                onClick={() => setRecordingGame(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14m-7-7h14" /></svg>
+                Record Game
+              </button>
+            ) : null;
+          })()}
         </div>
 
         {campaign.games.length > 0 ? (

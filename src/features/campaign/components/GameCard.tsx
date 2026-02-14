@@ -24,9 +24,14 @@ export function GameCard({ game }: GameCardProps) {
           <div className="text-[11px] text-text-muted truncate">{game.scenarioName}</div>
         )}
       </div>
-      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border capitalize ${resultStyles[game.result]}`}>
-        {game.result}
-      </span>
+      <div className="flex items-center gap-1.5">
+        {game.postGameCompleted && (
+          <span className="text-[9px] text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded" title="Post-game completed">PG</span>
+        )}
+        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border capitalize ${resultStyles[game.result]}`}>
+          {game.result}
+        </span>
+      </div>
     </div>
   );
 }

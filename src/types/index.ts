@@ -243,3 +243,33 @@ export interface ExplorationTable {
   tier: 'common' | 'rare' | 'legendary';
   entries: ExplorationTableEntry[];
 }
+
+// --- Post-Game Wizard ---
+
+export type PostGameStep = 'trauma' | 'promotions' | 'reinforcements' | 'exploration' | 'quartermaster';
+
+export interface PostGameSession {
+  id: string;
+  campaignId: string;
+  gameNumber: number;
+  currentStep: PostGameStep;
+  completedSteps: PostGameStep[];
+  traumaResults: {
+    modelId: string; modelName: string;
+    roll: number; entryId: string;
+    outcome: 'dead' | 'recovered' | 'scar';
+    entryName: string;
+  }[];
+  promotionResults: {
+    modelId: string; modelName: string;
+    tableId: string; tableName: string;
+    roll: number; entryId: string; skillName: string;
+  }[];
+  explorationResults: {
+    tier: string; roll: number;
+    entryId: string; entryName: string;
+    rewardText: string;
+  }[];
+  completed: boolean;
+  createdAt: Date;
+}

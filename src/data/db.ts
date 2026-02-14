@@ -4,6 +4,7 @@ import type {
   Faction, WarbandVariant, ModelTemplate, EquipmentTemplate,
   Addon, Warband, WarbandModel,
   Campaign, TraumaTable, SkillTable, ExplorationTable,
+  PostGameSession,
 } from '../types';
 
 export class TrenchCrusadeDB extends Dexie {
@@ -21,6 +22,7 @@ export class TrenchCrusadeDB extends Dexie {
   traumaTables!: Table<TraumaTable>;
   skillTables!: Table<SkillTable>;
   explorationTables!: Table<ExplorationTable>;
+  postGameSessions!: Table<PostGameSession>;
 
   constructor() {
     super('TrenchCrusadeDB');
@@ -89,6 +91,11 @@ export class TrenchCrusadeDB extends Dexie {
     }).upgrade(async (tx) => {
       // Re-seed modelTemplates to pick up `promotion` field
       await tx.table('modelTemplates').clear();
+    });
+
+    // v10: Post-game sessions
+    this.version(10).stores({
+      postGameSessions: 'id, campaignId, gameNumber',
     });
   }
 }

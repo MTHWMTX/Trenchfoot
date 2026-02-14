@@ -1,6 +1,8 @@
 import { db } from '../../data/db';
-import type { Campaign, CampaignGame, WarbandModel } from '../../types';
+import type { Campaign, CampaignGame, WarbandModel, PostGameSession, PostGameStep } from '../../types';
 import { getProgression } from './progression';
+
+const STEP_ORDER: PostGameStep[] = ['trauma', 'promotions', 'reinforcements', 'exploration', 'quartermaster'];
 
 export async function createCampaign(warbandId: string, patron: string): Promise<string> {
   const id = crypto.randomUUID();
@@ -90,4 +92,89 @@ export async function addAdvancementToModel(
 
   const advancements = [...(model.advancements ?? []), { id: crypto.randomUUID(), ...advancement }];
   await db.warbandModels.update(modelId, { advancements });
+}
+
+// --- Post-Game Session Management ---
+
+export async function createPostGameSession(campaignId: string, gameNumber: number): Promise<string> {
+  const id = crypto.randomUUID();
+  const session: PostGameSession = {
+    id,
+    campaignId,
+    gameNumber,
+    currentStep: 'trauma',
+    completedSteps: [],
+    traumaResults: [],
+    promotionResults: [],
+    explorationResults: [],
+    completed: false,
+    createdAt: new Date(),
+  };
+  await db.postGameSessions.add(session);
+  return id;
+}
+
+export async function updatePostGameSession(id: string, changes: Partial<PostGameSession>) {
+  await db.postGameSessions.update(id, changes);
+}
+
+export async function completePostGameStep(sessionId: string, step: PostGameStep) {
+  const session = await db.postGameSessions.get(sessionId);
+  if (!session) return;
+
+  const completedSteps = session.completedSteps.includes(step)
+    ? session.completedSteps
+    : [...session.completedSteps, step];
+
+  const currentIndex = STEP_ORDER.indexOf(step);
+  const nextStep = currentIndex < STEP_ORDER.length - 1 ? STEP_ORDER[currentIndex + 1] : step;
+
+  await db.postGameSessions.update(sessionId, { completedSteps, currentStep: nextStep });
+}
+
+export async function completePostGame(sessionId: string) {
+  const session = await db.postGameSessions.get(sessionId);
+  if (!session) return;
+
+  await db.postGameSessions.update(sessionId, { completed: true });
+
+  // Mark the game's postGameCompleted flag
+  const campaign = await db.campaigns.get(session.campaignId);
+  if (!campaign) return;
+
+  const games = campaign.games.map(g =>
+    g.gameNumber === session.gameNumber ? { ...g, postGameCompleted: true } : g
+  );
+  await db.campaigns.update(session.campaignId, { games, updatedAt: new Date() });
+}
+
+export async function deletePostGameSession(id: string) {
+  await db.postGameSessions.delete(id);
+}
+
+// --- Resource Actions ---
+
+export async function addDucatsToStash(campaignId: string, amount: number) {
+  const campaign = await db.campaigns.get(campaignId);
+  if (!campaign) return;
+  await db.campaigns.update(campaignId, {
+    ducatStash: campaign.ducatStash + amount,
+    updatedAt: new Date(),
+  });
+}
+
+export async function addGloryPoints(campaignId: string, amount: number) {
+  const campaign = await db.campaigns.get(campaignId);
+  if (!campaign) return;
+  await db.campaigns.update(campaignId, {
+    gloryPoints: campaign.gloryPoints + amount,
+    updatedAt: new Date(),
+  });
+}
+
+export async function updatePromotionDice(modelId: string, earned: number, spent: number) {
+  await db.warbandModels.update(modelId, {
+    promotionDiceEarned: earned,
+    promotionDiceSpent: spent,
+  });
 }

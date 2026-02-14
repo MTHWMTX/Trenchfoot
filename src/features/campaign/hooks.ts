@@ -27,3 +27,24 @@ export function useSkillTables() {
 export function useExplorationTables() {
   return useLiveQuery(() => db.explorationTables.toArray()) ?? [];
 }
+
+export function usePostGameSession(campaignId: string, gameNumber: number) {
+  return useLiveQuery(
+    () => db.postGameSessions
+      .where('[campaignId+gameNumber]')
+      .equals([campaignId, gameNumber])
+      .first()
+      .catch(() =>
+        // Fallback if compound index not available
+        db.postGameSessions
+          .where('campaignId').equals(campaignId)
+          .filter(s => s.gameNumber === gameNumber && !s.completed)
+          .first()
+      ),
+    [campaignId, gameNumber]
+  );
+}
+
+export function usePostGameSessionById(id: string) {
+  return useLiveQuery(() => db.postGameSessions.get(id), [id]);
+}
