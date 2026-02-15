@@ -20,3 +20,14 @@ export function useActiveGameForWarband(warbandId: string) {
     [warbandId]
   );
 }
+
+export function useCompletedGamesForWarband(warbandId: string) {
+  return useLiveQuery(
+    () => db.gameSessions
+      .where('status').equals('completed')
+      .filter(s => s.warbandId === warbandId)
+      .sortBy('updatedAt')
+      .then(arr => arr.reverse()),
+    [warbandId]
+  ) ?? [];
+}

@@ -3,17 +3,24 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { useGameSession } from '../hooks';
-import { advanceTurn, endGameSession } from '../actions';
+import { advanceTurn, endGameSession, undoGameState, redoGameState } from '../actions';
 import { useGameStore } from '../store';
+import { useUndoStore } from '../undoStore';
+import { useCampaign } from '../../campaign/hooks';
 import { GameModelCard } from './GameModelCard';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { RecordGameSheet } from '../../campaign/components/RecordGameSheet';
 
 export function GameTracker() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const session = useGameSession(sessionId ?? '');
   const navigate = useNavigate();
   const { setExpandedModel } = useGameStore();
+  const undoPast = useUndoStore(s => s.past);
+  const undoFuture = useUndoStore(s => s.future);
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const [recordingEnd, setRecordingEnd] = useState(false);
+  const campaign = useCampaign(session?.campaignId ?? '');
 
   const warband = useLiveQuery(
     () => session ? db.warbands.get(session.warbandId) : undefined,
@@ -86,12 +93,36 @@ export function GameTracker() {
           </div>
         )}
         <h1 className="text-xl font-bold">{warband?.name ?? 'Game'}</h1>
+        {session.scenarioName && (
+          <div className="text-text-muted text-xs mt-1">{session.scenarioName}</div>
+        )}
       </div>
 
       {/* Sticky turn bar */}
       <div className="sticky top-[53px] z-20 -mx-4 px-4 py-3 bg-bg-primary/90 backdrop-blur-lg border-b border-border-subtle mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {/* Undo/Redo */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => undoGameState(session.id)}
+                disabled={undoPast.length === 0}
+                className="w-7 h-7 flex items-center justify-center rounded-md bg-bg-tertiary border-none cursor-pointer text-text-muted hover:text-text-primary disabled:opacity-30 disabled:cursor-default transition-colors"
+                title="Undo"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v6h6" /><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13" /></svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => redoGameState(session.id)}
+                disabled={undoFuture.length === 0}
+                className="w-7 h-7 flex items-center justify-center rounded-md bg-bg-tertiary border-none cursor-pointer text-text-muted hover:text-text-primary disabled:opacity-30 disabled:cursor-default transition-colors"
+                title="Redo"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 7v6h-6" /><path d="M3 17a9 9 0 019-9 9 9 0 016.69 3L21 13" /></svg>
+              </button>
+            </div>
             <span className="text-sm font-bold text-text-primary">Turn {session.turn}</span>
             <span className="text-[11px] text-text-muted">
               {activatedCount}/{totalActive} activated
@@ -134,12 +165,19 @@ export function GameTracker() {
       {/* End game */}
       <button
         type="button"
-        onClick={() => setConfirmEnd(true)}
+        onClick={() => {
+          if (session.campaignId && campaign) {
+            setRecordingEnd(true);
+          } else {
+            setConfirmEnd(true);
+          }
+        }}
         className="w-full py-3 bg-accent-red/10 border border-accent-red/20 rounded-xl text-accent-red-bright text-sm font-semibold hover:bg-accent-red/20 transition-colors cursor-pointer mb-4"
       >
         End Game
       </button>
 
+      {/* Standalone end confirm */}
       <ConfirmDialog
         open={confirmEnd}
         onOpenChange={setConfirmEnd}
@@ -149,6 +187,22 @@ export function GameTracker() {
         confirmVariant="danger"
         onConfirm={handleEndGame}
       />
+
+      {/* Campaign end → record game */}
+      {session.campaignId && campaign && (
+        <RecordGameSheet
+          open={recordingEnd}
+          onClose={() => setRecordingEnd(false)}
+          campaignId={session.campaignId}
+          gameNumber={campaign.currentGame}
+          defaultScenario={session.scenarioName}
+          onRecorded={async () => {
+            await endGameSession(session.id);
+            setExpandedModel(null);
+            navigate(backTo);
+          }}
+        />
+      )}
     </div>
   );
 }

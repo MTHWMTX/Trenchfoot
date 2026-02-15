@@ -11,7 +11,7 @@ import { ModelAddSheet } from './ModelAddSheet';
 import { ModelEditSheet } from './ModelEditSheet';
 import { WarbandEditSheet } from './WarbandEditSheet';
 import { useActiveGameForWarband } from '../../game/hooks';
-import { createGameSession } from '../../game/actions';
+import { GameHistory } from '../../game/components/GameHistory';
 
 export function WarbandRoster() {
   const { id } = useParams<{ id: string }>();
@@ -86,10 +86,7 @@ export function WarbandRoster() {
           ) : (
             <button
               type="button"
-              onClick={async () => {
-                const newId = await createGameSession(warband.id, null);
-                navigate(`/game/${newId}`);
-              }}
+              onClick={() => navigate('/game/setup', { state: { warbandId: warband.id, campaignId: null } })}
               className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
@@ -137,6 +134,9 @@ export function WarbandRoster() {
           <span className="text-sm font-medium">Add Model</span>
         </button>
       </div>
+
+      {/* Game history */}
+      <GameHistory warbandId={warband.id} />
 
       {/* Add model sheet */}
       <ModelAddSheet

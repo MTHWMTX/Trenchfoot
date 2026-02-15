@@ -8,12 +8,14 @@ interface RecordGameSheetProps {
   onClose: () => void;
   campaignId: string;
   gameNumber: number;
+  defaultScenario?: string;
+  onRecorded?: () => void;
 }
 
-export function RecordGameSheet({ open, onClose, campaignId, gameNumber }: RecordGameSheetProps) {
+export function RecordGameSheet({ open, onClose, campaignId, gameNumber, defaultScenario, onRecorded }: RecordGameSheetProps) {
   const [result, setResult] = useState<CampaignGame['result']>('win');
   const [opponentName, setOpponentName] = useState('');
-  const [scenarioName, setScenarioName] = useState('');
+  const [scenarioName, setScenarioName] = useState(defaultScenario ?? '');
   const [notes, setNotes] = useState('');
 
   const handleRecord = async () => {
@@ -23,6 +25,7 @@ export function RecordGameSheet({ open, onClose, campaignId, gameNumber }: Recor
       scenarioName: scenarioName.trim(),
       notes: notes.trim(),
     });
+    onRecorded?.();
     setResult('win');
     setOpponentName('');
     setScenarioName('');

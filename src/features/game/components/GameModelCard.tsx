@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { useGameStore } from '../store';
 import { updateModelState } from '../actions';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import type { GameModelState, GameModelStatus } from '../../../types';
 
 const statusConfig: Record<GameModelStatus, { label: string; badge: string; next: GameModelStatus }> = {
@@ -15,15 +17,28 @@ interface GameModelCardProps {
   sessionId: string;
 }
 
+function hasTough(
+  templateTags: string[] | undefined,
+  advancements: { name: string }[] | undefined
+): boolean {
+  if (templateTags?.some(t => t.toLowerCase() === 'tough')) return true;
+  if (advancements?.some(a => a.name.toLowerCase() === 'tough')) return true;
+  return false;
+}
+
 export function GameModelCard({ model, sessionId }: GameModelCardProps) {
   const template = useLiveQuery(() => db.modelTemplates.get(model.templateId), [model.templateId]);
   const { expandedModelId, setExpandedModel } = useGameStore();
   const isExpanded = expandedModelId === model.modelId;
+  const [showToughPrompt, setShowToughPrompt] = useState(false);
+  const [toughConfirmed, setToughConfirmed] = useState(false);
 
+  // Load warbandModel eagerly (not just on expand) for TOUGH detection
   const warbandModel = useLiveQuery(
-    () => isExpanded ? db.warbandModels.get(model.modelId) : undefined,
-    [model.modelId, isExpanded]
+    () => db.warbandModels.get(model.modelId),
+    [model.modelId]
   );
+
   const equipmentIds = warbandModel?.equipmentIds ?? [];
   const equipment = useLiveQuery(
     () => isExpanded && equipmentIds.length > 0
@@ -41,6 +56,29 @@ export function GameModelCard({ model, sessionId }: GameModelCardProps) {
   const cfg = statusConfig[model.status];
   const isActivated = model.activated;
   const isOut = model.status === 'out';
+  const modelIsTough = hasTough(template?.tags, warbandModel?.advancements);
+  const toughUsed = model.toughUsed ?? false;
+
+  function handleStatusCycle() {
+    const next = cfg.next;
+    // Intercept down → out for TOUGH models
+    if (model.status === 'down' && next === 'out' && modelIsTough && !toughUsed) {
+      setShowToughPrompt(true);
+      return;
+    }
+    updateModelState(sessionId, model.modelId, { status: next });
+  }
+
+  function handleToughConfirm() {
+    // Use TOUGH: stay down instead of going out
+    setToughConfirmed(true);
+    updateModelState(sessionId, model.modelId, { status: 'down', toughUsed: true });
+  }
+
+  function handleToughDecline() {
+    // Decline TOUGH: go out
+    updateModelState(sessionId, model.modelId, { status: 'out' });
+  }
 
   // Out-of-action models show as collapsed summary
   if (isOut) {
@@ -105,7 +143,7 @@ export function GameModelCard({ model, sessionId }: GameModelCardProps) {
         {/* Status badge — tap to cycle */}
         <button
           type="button"
-          onClick={() => updateModelState(sessionId, model.modelId, { status: cfg.next })}
+          onClick={handleStatusCycle}
           className={`text-[10px] font-semibold px-2 py-0.5 rounded-md cursor-pointer border-none ${cfg.badge}`}
         >
           {cfg.label}
@@ -119,6 +157,21 @@ export function GameModelCard({ model, sessionId }: GameModelCardProps) {
           <span>RNG {template.stats.ranged ?? '—'}</span>
           <span>MEL {template.stats.melee ?? '—'}</span>
           <span>ARM {template.stats.armour}</span>
+        </div>
+      )}
+
+      {/* Blood marker modifier reminders */}
+      {model.bloodMarkers > 0 && (
+        <div className="flex items-center gap-3 px-3 pb-1 text-[10px]">
+          <span className="text-accent-red-bright">-{model.bloodMarkers} DICE to rolls</span>
+          <span className="text-accent-red-bright">+{model.bloodMarkers} INJURY DICE against</span>
+        </div>
+      )}
+
+      {/* Down status reminder */}
+      {model.status === 'down' && (
+        <div className="px-3 pb-1 text-[10px] text-yellow-400">
+          Down: -1 DICE, +1 INJURY in melee
         </div>
       )}
 
@@ -204,6 +257,23 @@ export function GameModelCard({ model, sessionId }: GameModelCardProps) {
           )}
         </div>
       )}
+
+      {/* TOUGH prompt */}
+      <ConfirmDialog
+        open={showToughPrompt}
+        onOpenChange={(open) => {
+          if (!open && !toughConfirmed) {
+            // Closed without confirming = decline TOUGH
+            handleToughDecline();
+          }
+          setShowToughPrompt(open);
+          if (!open) setToughConfirmed(false);
+        }}
+        title="TOUGH"
+        description="This model has TOUGH. Use it to become Down instead of Out of Action?"
+        confirmLabel="Use TOUGH"
+        onConfirm={handleToughConfirm}
+      />
     </div>
   );
 }

@@ -287,12 +287,14 @@ export interface GameModelState {
   blessingMarkers: number;
   infectionMarkers: number;
   status: GameModelStatus;
+  toughUsed: boolean;
 }
 
 export interface GameSession {
   id: string;
   warbandId: string;
   campaignId: string | null;
+  scenarioName: string;
   turn: number;
   modelStates: GameModelState[];
   status: 'active' | 'completed';

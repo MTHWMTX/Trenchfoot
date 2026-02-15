@@ -11,7 +11,7 @@ import { CampaignModelSheet } from './CampaignModelSheet';
 import { CampaignEditSheet } from './CampaignEditSheet';
 import { MAX_GAMES } from '../progression';
 import { useActiveGameForWarband } from '../../game/hooks';
-import { createGameSession } from '../../game/actions';
+import { GameHistory } from '../../game/components/GameHistory';
 
 const statusBadge = {
   active: 'bg-green-400/15 text-green-400',
@@ -109,10 +109,7 @@ export function CampaignDetail() {
             ) : (
               <button
                 type="button"
-                onClick={async () => {
-                  const newId = await createGameSession(campaign.warbandId, campaign.id);
-                  navigate(`/game/${newId}`);
-                }}
+                onClick={() => navigate('/game/setup', { state: { warbandId: campaign.warbandId, campaignId: campaign.id } })}
                 className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
@@ -241,6 +238,9 @@ export function CampaignDetail() {
           </div>
         )}
       </div>
+
+      {/* Game sessions history */}
+      <GameHistory warbandId={campaign.warbandId} />
 
       {/* Sheets */}
       <RecordGameSheet

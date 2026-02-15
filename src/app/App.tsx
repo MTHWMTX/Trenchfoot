@@ -15,6 +15,7 @@ import { CampaignCreate } from '../features/campaign/components/CampaignCreate';
 import { CampaignDetail } from '../features/campaign/components/CampaignDetail';
 import { PostGameWizard } from '../features/campaign/components/PostGameWizard';
 import { GameTracker } from '../features/game/components/GameTracker';
+import { GameSetup } from '../features/game/components/GameSetup';
 import { seedDatabase } from '../data/seed';
 
 export function App() {
@@ -53,6 +54,7 @@ export function App() {
           <Route path="/campaign/new" element={<CampaignCreate />} />
           <Route path="/campaign/:id" element={<CampaignDetail />} />
           <Route path="/campaign/:id/postgame" element={<PostGameWizard />} />
+          <Route path="/game/setup" element={<GameSetup />} />
           <Route path="/game/:sessionId" element={<GameTracker />} />
         </Route>
       </Routes>
