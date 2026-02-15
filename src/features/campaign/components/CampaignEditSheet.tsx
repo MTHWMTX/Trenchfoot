@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
-import { updateCampaign } from '../actions';
+import { updateCampaign, deleteCampaign } from '../actions';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import type { Campaign } from '../../../types';
 
 interface CampaignEditSheetProps {
@@ -10,8 +12,10 @@ interface CampaignEditSheetProps {
 }
 
 export function CampaignEditSheet({ campaign, open, onClose }: CampaignEditSheetProps) {
+  const navigate = useNavigate();
   const [patron, setPatron] = useState('');
   const [notes, setNotes] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (campaign) {
@@ -70,8 +74,33 @@ export function CampaignEditSheet({ campaign, open, onClose }: CampaignEditSheet
           >
             Save Changes
           </button>
+
+          {/* Danger zone */}
+          <div className="mt-6 pt-4 border-t border-border-default">
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              className="w-full py-3 bg-accent-red/10 border border-accent-red/20 rounded-xl text-accent-red-bright text-sm font-semibold hover:bg-accent-red/20 transition-colors cursor-pointer"
+            >
+              Delete Campaign
+            </button>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete Campaign"
+        description="This will permanently delete this campaign and all its game history. This cannot be undone."
+        confirmLabel="Delete"
+        confirmVariant="danger"
+        onConfirm={async () => {
+          await deleteCampaign(campaign.id);
+          onClose();
+          navigate('/campaign');
+        }}
+      />
     </Dialog.Root>
   );
 }

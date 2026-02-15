@@ -69,6 +69,9 @@ export function CampaignDetail() {
   }
 
   const campaignComplete = campaign.currentGame > MAX_GAMES;
+  const wins = campaign.games.filter(g => g.result === 'win').length;
+  const losses = campaign.games.filter(g => g.result === 'loss').length;
+  const draws = campaign.games.filter(g => g.result === 'draw').length;
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto">
@@ -93,6 +96,21 @@ export function CampaignDetail() {
         </div>
         <div className="text-text-muted text-xs mt-1">Patron: {campaign.patron}</div>
       </div>
+
+      {/* Campaign complete banner */}
+      {campaignComplete && (
+        <div className="mb-4 p-4 bg-accent-gold/5 border-2 border-accent-gold/40 rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-gold"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7m10 2h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7m-5-4v4m0 0L8 21h8l-4-14z" /></svg>
+            <span className="text-accent-gold font-bold text-sm">Campaign Complete</span>
+          </div>
+          <div className="flex items-center gap-4 text-xs">
+            <span className="text-green-400 font-semibold">{wins}W</span>
+            <span className="text-accent-red-bright font-semibold">{losses}L</span>
+            <span className="text-text-muted font-semibold">{draws}D</span>
+          </div>
+        </div>
+      )}
 
       {/* Summary bar */}
       <div className="sticky top-[53px] z-20 -mx-4 px-4 py-3 bg-bg-primary/90 backdrop-blur-lg border-b border-border-subtle mb-4">
@@ -158,8 +176,20 @@ export function CampaignDetail() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 bg-bg-secondary border border-border-default rounded-xl">
-            <div className="text-text-muted text-xs">No games recorded yet</div>
+          <div className="text-center py-10 bg-bg-secondary border border-border-default rounded-xl">
+            <svg className="mx-auto mb-3 text-text-muted/30" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <div className="text-text-secondary text-sm font-medium mb-1">No games recorded yet</div>
+            <div className="text-text-muted/60 text-[11px] mb-4">Record your first game to begin tracking your campaign</div>
+            <button
+              type="button"
+              onClick={() => setRecordingGame(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent-gold/15 border border-accent-gold/30 rounded-xl text-accent-gold text-[12px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14m-7-7h14" /></svg>
+              Record First Game
+            </button>
           </div>
         )}
       </div>

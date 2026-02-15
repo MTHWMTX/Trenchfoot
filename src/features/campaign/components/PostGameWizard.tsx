@@ -3,13 +3,14 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { useCampaign, useTraumaTables, useSkillTables, useExplorationTables } from '../hooks';
-import { createPostGameSession, completePostGameStep, completePostGame, updatePostGameSession } from '../actions';
+import { createPostGameSession, completePostGameStep, completePostGame, updatePostGameSession, deletePostGameSession } from '../actions';
 import { CampaignSummary } from './CampaignSummary';
 import { TraumaStep } from './TraumaStep';
 import { PromotionStep } from './PromotionStep';
 import { ReinforcementStep } from './ReinforcementStep';
 import { ExplorationStep } from './ExplorationStep';
 import { QuartermasterStep } from './QuartermasterStep';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import type { PostGameStep } from '../../../types';
 
 const STEPS: { key: PostGameStep; label: string }[] = [
@@ -41,6 +42,7 @@ export function PostGameWizard() {
   );
 
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [confirmAbandon, setConfirmAbandon] = useState(false);
 
   const session = useLiveQuery(
     () => sessionId ? db.postGameSessions.get(sessionId) : undefined,
@@ -77,6 +79,26 @@ export function PostGameWizard() {
   const traumaTables = useTraumaTables();
   const skillTables = useSkillTables();
   const explorationTables = useExplorationTables();
+
+  // No pending post-game phase
+  if (campaign && gameNumber === 0) {
+    return (
+      <div className="px-4 py-6 max-w-lg mx-auto">
+        <Link
+          to={`/campaign/${campaign.id}`}
+          className="inline-flex items-center gap-1 text-text-muted text-xs hover:text-accent-gold no-underline transition-colors mb-4"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+          Campaign
+        </Link>
+        <div className="text-center py-16">
+          <svg className="mx-auto mb-3 text-text-muted/30" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="10" /></svg>
+          <div className="text-text-secondary text-sm font-medium mb-1">No pending post-game</div>
+          <div className="text-text-muted text-xs">All games have completed their post-game phase.</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!campaign || !session) {
     return (
@@ -120,7 +142,16 @@ export function PostGameWizard() {
         Campaign
       </Link>
 
-      <h1 className="text-xl font-bold mb-1">Post-Game Phase</h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-xl font-bold">Post-Game Phase</h1>
+        <button
+          type="button"
+          onClick={() => setConfirmAbandon(true)}
+          className="text-[11px] text-text-muted hover:text-accent-red-bright transition-colors bg-transparent border-none cursor-pointer"
+        >
+          Abandon
+        </button>
+      </div>
       <div className="text-text-muted text-xs mb-4">Game {session.gameNumber}</div>
 
       {/* Summary bar */}
@@ -207,6 +238,19 @@ export function PostGameWizard() {
           />
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmAbandon}
+        onOpenChange={setConfirmAbandon}
+        title="Abandon Post-Game?"
+        description="Any trauma, promotions, or exploration results already rolled will remain applied to your models. The post-game session will be deleted and you can restart it later."
+        confirmLabel="Abandon"
+        confirmVariant="danger"
+        onConfirm={async () => {
+          await deletePostGameSession(session.id);
+          navigate(`/campaign/${campaign.id}`);
+        }}
+      />
     </div>
   );
 }

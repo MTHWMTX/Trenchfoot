@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../data/db';
 import { rollD6, rollD66, lookupEntry } from '../dice';
@@ -24,6 +24,21 @@ export function TraumaStep({ session, models, traumaTables, gameNumber, onComple
   const [rolledModels, setRolledModels] = useState<Set<string>>(
     new Set(session.traumaResults.map(r => r.modelId))
   );
+
+  // Auto-recover models that were set to "recovering" from previous game
+  const recoveredNamesRef = useRef<string[]>([]);
+  const didAutoRecover = useRef(false);
+
+  useEffect(() => {
+    if (didAutoRecover.current || models.length === 0) return;
+    didAutoRecover.current = true;
+
+    const recovering = models.filter(m => m.campaignStatus === 'recovering');
+    if (recovering.length === 0) return;
+
+    recoveredNamesRef.current = recovering.map(m => m.customName || 'Unknown');
+    recovering.forEach(m => updateModelCampaignStatus(m.id, 'active'));
+  }, [models]);
 
   const aliveModels = models.filter(m => (m.campaignStatus ?? 'active') === 'active');
 
@@ -84,6 +99,15 @@ export function TraumaStep({ session, models, traumaTables, gameNumber, onComple
     <div>
       <h2 className="text-sm font-semibold text-text-secondary mb-1">Trauma Rolls</h2>
       <p className="text-text-muted text-xs mb-4">Select models that were taken Out of Action, then roll for each.</p>
+
+      {recoveredNamesRef.current.length > 0 && (
+        <div className="mb-4 p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-xl">
+          <div className="text-yellow-400 text-[11px] font-semibold mb-0.5">Models Recovered</div>
+          <div className="text-text-muted text-[11px]">
+            {recoveredNamesRef.current.join(', ')} {recoveredNamesRef.current.length === 1 ? 'has' : 'have'} recovered and returned to active duty.
+          </div>
+        </div>
+      )}
 
       {/* Model selection */}
       {aliveModels.length > 0 ? (

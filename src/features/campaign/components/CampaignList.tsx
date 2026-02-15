@@ -8,7 +8,7 @@ import { FactionBadge } from '../../warband/components/FactionBadge';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { MAX_GAMES } from '../progression';
 
-function CampaignCard({ campaign }: { campaign: { id: string; warbandId: string; patron: string; currentGame: number } }) {
+function CampaignCard({ campaign }: { campaign: { id: string; warbandId: string; patron: string; currentGame: number; games: import('../../../types').CampaignGame[] } }) {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const warband = useLiveQuery(() => db.warbands.get(campaign.warbandId), [campaign.warbandId]);
@@ -17,6 +17,10 @@ function CampaignCard({ campaign }: { campaign: { id: string; warbandId: string;
     [warband?.factionId]
   );
 
+  const isComplete = campaign.currentGame > MAX_GAMES;
+  const wins = campaign.games.filter(g => g.result === 'win').length;
+  const losses = campaign.games.filter(g => g.result === 'loss').length;
+  const draws = campaign.games.filter(g => g.result === 'draw').length;
   const gameDisplay = `Game ${Math.min(campaign.currentGame, MAX_GAMES)}/${MAX_GAMES}`;
   const warbandName = warband?.name ?? 'Unknown Warband';
 
@@ -26,10 +30,18 @@ function CampaignCard({ campaign }: { campaign: { id: string; warbandId: string;
         to={`/campaign/${campaign.id}`}
         className="block p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all duration-200 no-underline"
       >
-        {faction && <FactionBadge name={faction.name} team={faction.team} />}
+        <div className="flex items-center gap-2">
+          {faction && <FactionBadge name={faction.name} team={faction.team} />}
+          {isComplete && (
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-accent-gold/15 text-accent-gold">Complete</span>
+          )}
+        </div>
         <div className="font-semibold text-text-primary text-[14px] mt-2">{warbandName}</div>
         <div className="flex items-center gap-3 mt-1.5 text-[11px] text-text-muted">
           <span>{gameDisplay}</span>
+          {campaign.games.length > 0 && (
+            <span>{wins}W-{losses}L-{draws}D</span>
+          )}
           <span>Patron: {campaign.patron}</span>
         </div>
       </Link>
@@ -81,7 +93,9 @@ export function CampaignList() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-xl font-bold">Campaigns</h1>
-          <p className="text-text-muted text-xs mt-0.5">{campaigns.length} active</p>
+          <p className="text-text-muted text-xs mt-0.5">
+            {campaigns.filter(c => c.currentGame <= MAX_GAMES).length} active, {campaigns.length} total
+          </p>
         </div>
         <Link
           to="/campaign/new"
