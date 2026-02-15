@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useWarband, useWarbandModels, useWarbandCost, useFaction } from '../hooks';
 import { removeModelFromWarband } from '../actions';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -10,6 +10,8 @@ import { ModelCard } from './ModelCard';
 import { ModelAddSheet } from './ModelAddSheet';
 import { ModelEditSheet } from './ModelEditSheet';
 import { WarbandEditSheet } from './WarbandEditSheet';
+import { useActiveGameForWarband } from '../../game/hooks';
+import { createGameSession } from '../../game/actions';
 
 export function WarbandRoster() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +19,8 @@ export function WarbandRoster() {
   const models = useWarbandModels(id ?? '');
   const cost = useWarbandCost(id ?? '');
   const faction = useFaction(warband?.factionId ?? '');
+  const navigate = useNavigate();
+  const activeGame = useActiveGameForWarband(id ?? '');
   const [addingModel, setAddingModel] = useState(false);
   const [editingModelId, setEditingModelId] = useState<string | null>(null);
   const [editingWarband, setEditingWarband] = useState(false);
@@ -70,6 +74,28 @@ export function WarbandRoster() {
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
           </button>
+          {activeGame ? (
+            <button
+              type="button"
+              onClick={() => navigate(`/game/${activeGame.id}`)}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-green-400/15 border border-green-400/30 rounded-lg text-green-400 text-[11px] font-semibold hover:bg-green-400/25 transition-colors cursor-pointer"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              Resume Game
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={async () => {
+                const newId = await createGameSession(warband.id, null);
+                navigate(`/game/${newId}`);
+              }}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+              Start Game
+            </button>
+          )}
         </div>
         {warband.notes && (
           <p className="text-text-muted text-xs mt-1.5 whitespace-pre-line">{warband.notes}</p>

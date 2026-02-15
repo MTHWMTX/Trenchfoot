@@ -10,6 +10,8 @@ import { RecordGameSheet } from './RecordGameSheet';
 import { CampaignModelSheet } from './CampaignModelSheet';
 import { CampaignEditSheet } from './CampaignEditSheet';
 import { MAX_GAMES } from '../progression';
+import { useActiveGameForWarband } from '../../game/hooks';
+import { createGameSession } from '../../game/actions';
 
 const statusBadge = {
   active: 'bg-green-400/15 text-green-400',
@@ -34,6 +36,7 @@ export function CampaignDetail() {
   ) ?? [];
 
   const navigate = useNavigate();
+  const activeGame = useActiveGameForWarband(campaign?.warbandId ?? '');
   const [recordingGame, setRecordingGame] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
@@ -93,6 +96,30 @@ export function CampaignDetail() {
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" /></svg>
           </button>
+          {!campaignComplete && (
+            activeGame ? (
+              <button
+                type="button"
+                onClick={() => navigate(`/game/${activeGame.id}`)}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-green-400/15 border border-green-400/30 rounded-lg text-green-400 text-[11px] font-semibold hover:bg-green-400/25 transition-colors cursor-pointer"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                Resume Game
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={async () => {
+                  const newId = await createGameSession(campaign.warbandId, campaign.id);
+                  navigate(`/game/${newId}`);
+                }}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-accent-gold/15 border border-accent-gold/30 rounded-lg text-accent-gold text-[11px] font-semibold hover:bg-accent-gold/25 transition-colors cursor-pointer"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                Start Game
+              </button>
+            )
+          )}
         </div>
         <div className="text-text-muted text-xs mt-1">Patron: {campaign.patron}</div>
       </div>

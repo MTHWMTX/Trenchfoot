@@ -273,3 +273,29 @@ export interface PostGameSession {
   completed: boolean;
   createdAt: Date;
 }
+
+// --- In-Game Tracking ---
+
+export type GameModelStatus = 'active' | 'down' | 'out';
+
+export interface GameModelState {
+  modelId: string;
+  templateId: string;
+  customName: string;
+  activated: boolean;
+  bloodMarkers: number;
+  blessingMarkers: number;
+  infectionMarkers: number;
+  status: GameModelStatus;
+}
+
+export interface GameSession {
+  id: string;
+  warbandId: string;
+  campaignId: string | null;
+  turn: number;
+  modelStates: GameModelState[];
+  status: 'active' | 'completed';
+  createdAt: Date;
+  updatedAt: Date;
+}
