@@ -240,6 +240,7 @@ export function transformModels(raw: RawModel[]): ModelTemplate[] {
 export function transformEquipment(raw: RawEquipment[]): EquipmentTemplate[] {
   return raw.map(e => ({
     id: e.id,
+    rulesetId: RULESET_ID,
     name: e.name,
     category: e.category as EquipmentTemplate['category'],
     equipType: e.equip_type || null,
@@ -254,6 +255,7 @@ export function transformEquipment(raw: RawEquipment[]): EquipmentTemplate[] {
 export function transformAddons(raw: RawAddon[]): Addon[] {
   return raw.map(a => ({
     id: a.id,
+    rulesetId: RULESET_ID,
     name: a.name,
     factionId: a.faction_id || 'fc_none',
     tags: (a.tags || []).map(t => t.tag_name),

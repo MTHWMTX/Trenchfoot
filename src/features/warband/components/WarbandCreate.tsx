@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useFactions, useWarbandVariants } from '../hooks';
+import { useFactionsByRuleset, useWarbandVariants, useAllRulesets } from '../hooks';
 import { createWarband } from '../actions';
 import { FactionBadge } from './FactionBadge';
-import type { Faction, GameType } from '../../../types';
+import type { Faction, GameType, Ruleset } from '../../../types';
+
+type Step = 'ruleset' | 'faction' | 'variant' | 'details';
 
 export function WarbandCreate() {
   const navigate = useNavigate();
-  const factions = useFactions();
-  const [step, setStep] = useState<'faction' | 'variant' | 'details'>('faction');
+  const allRulesets = useAllRulesets();
+  const [step, setStep] = useState<Step>('ruleset');
+  const [selectedRuleset, setSelectedRuleset] = useState<Ruleset | null>(null);
   const [selectedFaction, setSelectedFaction] = useState<Faction | null>(null);
   const [selectedVariantId, setSelectedVariantId] = useState('');
   const [name, setName] = useState('');
   const [gameType, setGameType] = useState<GameType>('standard');
 
+  const factions = useFactionsByRuleset(selectedRuleset?.id ?? '');
   const namedVariants = useWarbandVariants(selectedFaction?.id ?? '');
   const variants = selectedFaction
     ? [
@@ -36,6 +40,21 @@ export function WarbandCreate() {
   const faithfulFactions = factions.filter((f) => f.team === 'heaven');
   const hereticFactions = factions.filter((f) => f.team === 'hell');
 
+  // Auto-select ruleset if only official exists
+  useEffect(() => {
+    if (allRulesets.length === 1 && step === 'ruleset') {
+      setSelectedRuleset(allRulesets[0]);
+      setStep('faction');
+    }
+  }, [allRulesets, step]);
+
+  const handleRulesetSelect = (rs: Ruleset) => {
+    setSelectedRuleset(rs);
+    setSelectedFaction(null);
+    setSelectedVariantId('');
+    setStep('faction');
+  };
+
   const handleFactionSelect = (faction: Faction) => {
     setSelectedFaction(faction);
     setStep('variant');
@@ -48,15 +67,24 @@ export function WarbandCreate() {
   };
 
   const handleCreate = async () => {
-    if (!selectedFaction || !selectedVariantId || !name.trim()) return;
+    if (!selectedFaction || !selectedVariantId || !name.trim() || !selectedRuleset) return;
     const id = await createWarband({
       name: name.trim(),
       factionId: selectedFaction.id,
       variantId: selectedVariantId,
+      rulesetId: selectedRuleset.id,
       gameType,
     });
     navigate(`/warband/${id}`);
   };
+
+  const stepLabels = allRulesets.length > 1
+    ? ['Ruleset', 'Faction', 'Variant', 'Details']
+    : ['Faction', 'Variant', 'Details'];
+
+  const stepIndex = allRulesets.length > 1
+    ? { ruleset: 0, faction: 1, variant: 2, details: 3 }[step]
+    : { ruleset: -1, faction: 0, variant: 1, details: 2 }[step];
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto">
@@ -69,8 +97,7 @@ export function WarbandCreate() {
 
       {/* Step indicator */}
       <div className="flex items-center gap-2 mb-6 text-[11px]">
-        {['Faction', 'Variant', 'Details'].map((label, i) => {
-          const stepIndex = { faction: 0, variant: 1, details: 2 }[step];
+        {stepLabels.map((label, i) => {
           const active = i === stepIndex;
           const done = i < stepIndex;
           return (
@@ -84,44 +111,93 @@ export function WarbandCreate() {
         })}
       </div>
 
+      {/* Ruleset picker */}
+      {step === 'ruleset' && allRulesets.length > 1 && (
+        <div className="animate-fade-in">
+          <p className="text-text-muted text-xs mb-4">Choose a ruleset</p>
+          <div className="flex flex-col gap-2">
+            {allRulesets.map((rs) => (
+              <button
+                key={rs.id}
+                type="button"
+                onClick={() => handleRulesetSelect(rs)}
+                className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold text-[13px] text-text-primary">{rs.name}</div>
+                  {rs.type === 'official' && (
+                    <span className="text-[9px] text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded">Official</span>
+                  )}
+                  {rs.type === 'homebrew' && (
+                    <span className="text-[9px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded">Homebrew</span>
+                  )}
+                </div>
+                <div className="text-text-muted text-[10px] mt-1">v{rs.version}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Faction picker */}
       {step === 'faction' && (
         <div className="animate-fade-in">
-          <p className="text-text-muted text-xs mb-4">Choose your faction</p>
+          <p className="text-text-muted text-xs mb-4">Choose your faction{selectedRuleset ? ` from ${selectedRuleset.name}` : ''}</p>
 
-          <div className="mb-4">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-gold/60 mb-2 block">Faithful</span>
-            <div className="flex flex-col gap-2">
-              {faithfulFactions.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => handleFactionSelect(f)}
-                  className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all cursor-pointer"
-                >
-                  <FactionBadge name={f.name} team={f.team} />
-                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
-                </button>
-              ))}
+          {factions.length === 0 && (
+            <div className="p-6 bg-bg-secondary border border-border-default border-dashed rounded-xl text-center">
+              <p className="text-text-muted text-sm">No factions in this ruleset</p>
+              <p className="text-text-muted text-xs mt-1">Add factions in the Homebrew tab first.</p>
             </div>
-          </div>
+          )}
 
-          <div>
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-red-bright/60 mb-2 block">Heretic</span>
-            <div className="flex flex-col gap-2">
-              {hereticFactions.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => handleFactionSelect(f)}
-                  className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-red/20 hover:bg-bg-tertiary transition-all cursor-pointer"
-                >
-                  <FactionBadge name={f.name} team={f.team} />
-                  <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
-                </button>
-              ))}
+          {faithfulFactions.length > 0 && (
+            <div className="mb-4">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-gold/60 mb-2 block">Faithful</span>
+              <div className="flex flex-col gap-2">
+                {faithfulFactions.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => handleFactionSelect(f)}
+                    className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-gold/20 hover:bg-bg-tertiary transition-all cursor-pointer"
+                  >
+                    <FactionBadge name={f.name} team={f.team} />
+                    <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {hereticFactions.length > 0 && (
+            <div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-red-bright/60 mb-2 block">Heretic</span>
+              <div className="flex flex-col gap-2">
+                {hereticFactions.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => handleFactionSelect(f)}
+                    className="w-full text-left p-4 bg-bg-secondary border border-border-default rounded-xl hover:border-accent-red/20 hover:bg-bg-tertiary transition-all cursor-pointer"
+                  >
+                    <FactionBadge name={f.name} team={f.team} />
+                    <div className="text-text-secondary text-[11px] mt-2 leading-relaxed line-clamp-3">{f.flavour}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {allRulesets.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setStep('ruleset')}
+              className="mt-4 text-text-muted text-xs hover:text-text-secondary transition-colors bg-transparent border-none cursor-pointer"
+            >
+              &larr; Change ruleset
+            </button>
+          )}
         </div>
       )}
 

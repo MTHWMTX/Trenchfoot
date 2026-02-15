@@ -112,6 +112,7 @@ export interface ModelTemplate {
 
 export interface EquipmentTemplate {
   id: string;
+  rulesetId: string;
   name: string;
   category: EquipmentCategory;
   equipType: string | null;
@@ -124,6 +125,7 @@ export interface EquipmentTemplate {
 
 export interface Addon {
   id: string;
+  rulesetId: string;
   name: string;
   factionId: string;
   tags: string[];

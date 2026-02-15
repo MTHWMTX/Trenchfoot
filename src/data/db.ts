@@ -103,6 +103,21 @@ export class TrenchCrusadeDB extends Dexie {
     this.version(11).stores({
       gameSessions: 'id, warbandId, status',
     });
+
+    // v12: Add rulesetId to equipmentTemplates/addons for homebrew; fix campaigns index
+    this.version(12).stores({
+      equipmentTemplates: 'id, category, rulesetId',
+      addons: 'id, factionId, rulesetId',
+      campaigns: 'id, warbandId, updatedAt',
+    }).upgrade(async (tx) => {
+      // Backfill existing records with official rulesetId
+      await tx.table('equipmentTemplates').toCollection().modify((item: any) => {
+        if (!item.rulesetId) item.rulesetId = 'official-1.0.2';
+      });
+      await tx.table('addons').toCollection().modify((item: any) => {
+        if (!item.rulesetId) item.rulesetId = 'official-1.0.2';
+      });
+    });
   }
 }
 

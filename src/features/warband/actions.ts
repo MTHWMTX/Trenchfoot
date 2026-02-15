@@ -5,6 +5,7 @@ export async function createWarband(opts: {
   name: string;
   factionId: string;
   variantId: string;
+  rulesetId: string;
   gameType: GameType;
 }): Promise<string> {
   const id = crypto.randomUUID();
@@ -14,7 +15,7 @@ export async function createWarband(opts: {
     name: opts.name,
     factionId: opts.factionId,
     variantId: opts.variantId,
-    rulesetId: 'official-1.0.2',
+    rulesetId: opts.rulesetId,
     gameType: opts.gameType,
     ducatLimit: opts.gameType === 'standard' ? 900 : 700,
     gloryLimit: opts.gameType === 'standard' ? 9 : 5,

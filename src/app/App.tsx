@@ -16,6 +16,8 @@ import { CampaignDetail } from '../features/campaign/components/CampaignDetail';
 import { PostGameWizard } from '../features/campaign/components/PostGameWizard';
 import { GameTracker } from '../features/game/components/GameTracker';
 import { GameSetup } from '../features/game/components/GameSetup';
+import { HomebrewHub } from '../features/homebrew/components/HomebrewHub';
+import { RulesetDetail } from '../features/homebrew/components/RulesetDetail';
 import { seedDatabase } from '../data/seed';
 
 export function App() {
@@ -56,6 +58,8 @@ export function App() {
           <Route path="/campaign/:id/postgame" element={<PostGameWizard />} />
           <Route path="/game/setup" element={<GameSetup />} />
           <Route path="/game/:sessionId" element={<GameTracker />} />
+          <Route path="/homebrew" element={<HomebrewHub />} />
+          <Route path="/homebrew/:rulesetId" element={<RulesetDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -5,6 +5,17 @@ export function useFactions() {
   return useLiveQuery(() => db.factions.toArray()) ?? [];
 }
 
+export function useFactionsByRuleset(rulesetId: string) {
+  return useLiveQuery(
+    () => db.factions.where('rulesetId').equals(rulesetId).toArray(),
+    [rulesetId]
+  ) ?? [];
+}
+
+export function useAllRulesets() {
+  return useLiveQuery(() => db.rulesets.toArray()) ?? [];
+}
+
 export function useFaction(id: string) {
   return useLiveQuery(() => db.factions.get(id), [id]);
 }
